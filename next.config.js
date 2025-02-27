@@ -8,7 +8,7 @@ const withNextra = nextra({
 export default withNextra({
   reactStrictMode: true,
   i18n: {
-    locales: ["en", "vn"],
+    locales: ["en", "vn", "jp"],
     defaultLocale: "en",
   },
   redirects: async () => [
