@@ -8,7 +8,7 @@ validator always_succeed(_key_hash: VerificationKeyHash) {
     True
   }
 
-  publish(_redeemer: Data, _credential: Certificate, _tx: Transaction) {
+  publish(_redeemer: Data, _certificate: Certificate, _tx: Transaction) {
     True
   }
 
