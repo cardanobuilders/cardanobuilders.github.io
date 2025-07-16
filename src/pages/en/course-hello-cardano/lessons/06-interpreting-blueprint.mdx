@@ -7,7 +7,151 @@ sidebarTitle: 6. Interpreting Blueprint
 
 # Lesson #06: Interpreting Blueprint
 
-- aiken build
-- check validator (all purpose the same hash)
-- check schema (high level logics)
-- Run cardano bar -> generate offchain code
+In the last lesson of Aiken development, we will learn how to interpret the ultimate output of onchain code developement - the blueprint. More importantly, we will learn how to translate the blueprint into offchain code that can be used to interact with the onchain code.
+
+## Blueprint
+
+Since [CIP57](https://cips.cardano.org/cip/CIP-57) is official, the blueprint is now a standard output of Cardano smart contract development, regardless of the way you build it. The blueprint is a JSON file that contains the following fields:
+
+- `preamble`:	An object with meta-information about the contract
+- `validators`:	An object of named validators
+- `definitions`: A registry of definition re-used across the specification
+
+Aiken is not exception, after we built and tested our contracts, we can generate the blueprint by running:
+
+```sh
+aiken build
+```
+
+We then can find the blueprint in the `plutus.json` file in the root of our project.
+
+### `preamble`
+
+The `preamble` session contains meta-information about the contract, such as the name, description, and version. The most important information is the `plutusVersion`, which indicates the version of Plutus that the contract is written in. This is important because in the offchain world we will need this information to prepare the code into a correctly usable format.
+
+```json
+{
+  "preamble": {
+    "title": "meshsdk/aiken-template",
+    "description": "Aiken contracts for project 'meshsdk/aiken-template'",
+    "version": "0.0.0",
+    "plutusVersion": "v3", // most important information!!
+    "compiler": {
+      "name": "Aiken",
+      "version": "v1.1.16+23061c0"
+    },
+    "license": "Apache-2.0"
+  },
+}
+```
+
+### `validators`
+
+The `validators` session contains all the `parameter`, `redeemer`, and `datum` type information, as well as the actual validator code. The type definition can be referred to a particular part in the `definitions` session, which we will cover later.
+
+```json
+{
+  "title": "spend.spending_logics_delegated.spend",
+  "datum": {
+    "title": "_datum_opt",
+    "schema": {
+      "$ref": "#/definitions/Data"
+    }
+  },
+  "redeemer": {
+    "title": "_redeemer",
+    "schema": {
+      "$ref": "#/definitions/Data"
+    }
+  },
+  "parameters": [
+    {
+      "title": "delegated_withdrawal_script_hash",
+      "schema": {
+        "$ref": "#/definitions/aiken~1crypto~1ScriptHash"
+      }
+    }
+  ],
+  "compiledCode": "58ac010100229800aba2aba1aba0aab9faab9eaab9dab9a9bae0024888888896600264646644b30013370e900118039baa001899914c004c03400a601a601c0052259800800c528456600266ebc00cc02cc03c00629462660040046020002805100d2444660020026eacc040c044c044c044c044c044c044c034dd518080048c020dd500099ba548008cc028dd4802a5eb822c8030c024004c024c028004c024004c010dd5004c52689b2b200401",
+  "hash": "9c9666ddc12fc42f0151cd029c150c7d410ede9fe3885c248c8c26a0"
+}
+```
+
+Notice the `spend.spending_logics_delegated.else` compiles to the same hash as the `spend.spending_logics_delegated.spend` function. This is because the `else` branch is not executed in this case, but it is still part of the validator code. So when we are building multiple purposes validators, they will compile to the same hash, i.e. same script, which can be utilitized in certain architectures.
+
+```json
+{
+  "title": "spend.spending_logics_delegated.else",
+  "redeemer": {
+    "schema": {}
+  },
+  "parameters": [
+    {
+      "title": "delegated_withdrawal_script_hash",
+      "schema": {
+        "$ref": "#/definitions/aiken~1crypto~1ScriptHash"
+      }
+    }
+  ],
+  "compiledCode": "58ac010100229800aba2aba1aba0aab9faab9eaab9dab9a9bae0024888888896600264646644b30013370e900118039baa001899914c004c03400a601a601c0052259800800c528456600266ebc00cc02cc03c00629462660040046020002805100d2444660020026eacc040c044c044c044c044c044c044c034dd518080048c020dd500099ba548008cc028dd4802a5eb822c8030c024004c024c028004c024004c010dd5004c52689b2b200401",
+  "hash": "9c9666ddc12fc42f0151cd029c150c7d410ede9fe3885c248c8c26a0"
+}
+```
+
+### `definitions`
+
+The `definitions` session contains the type definitions that are referenced in the `validators` session. This is where you can find the actual schema of the types used in the contract.
+
+```json
+{
+  "definitions": {
+    "Data": {
+      "title": "Data",
+      "description": "Any Plutus data."
+    },
+    "aiken/crypto/ScriptHash": {
+      "title": "ScriptHash",
+      "dataType": "bytes"
+    },
+    "cardano/assets/PolicyId": {
+      "title": "PolicyId",
+      "dataType": "bytes"
+    },
+    "withdraw/MyRedeemer": {
+      "title": "MyRedeemer",
+      "anyOf": [
+        {
+          "title": "ContinueCounting",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        },
+        {
+          "title": "StopCounting",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        }
+      ]
+    }
+  }
+}
+```
+
+## Generating offchain code at ease!
+
+Understanding the blueprint is crucial for Cardano development. However, in order to use it adequately, we need to obtain the precise offchain code that ties with the blueprint. This process alone can take hours to complete, as it involves translating the blueprint into offchain code that can be used to interact with the onchain code.
+
+In Mesh community, we have developed a tool in [`Cardano Bar VSCode Extension`](https://marketplace.visualstudio.com/items/?itemName=sidan-lab.cardano-bar-vscode) that can automate this process. By running the following below steps, you can generate the offchain code that corresponds to the blueprint:
+
+1. Create a new destination TypeScript file, e.g. `offchain.ts`.
+2. Open the command palette in VSCode (Ctrl+Shift+P or Cmd+Shift+P).
+3. Type `Parse blueprint to Typescript - Mesh` and select it.
+![VSCode command palette](../../../../../public/lessons/06-interpreting-blueprint/vscode-command.png)
+<br/>
+
+4. Select the `plutus.json` file that contains the blueprint.
+![VSCode command palette](../../../../../public/lessons/06-interpreting-blueprint/select-blueprint.png)
+<br/>
+
+Then you can obtain the generated offchain code in the `offchain.ts` file. This code will include all the necessary functions to interact with the onchain code, such as spending, minting, and querying the contract. For guidance on how to use the Mesh `Blueprint` class, refer to the [Mesh SDK documentation](https://meshjs.dev/apis/utilities/blueprints).
