@@ -420,25 +420,6 @@ test success_continue_counting() {
 And we can populate the failure cases at ease:
 
 ```rs
-test success_continue_counting() {
-  let test_case =
-    ContinueCountingTest {
-      is_ref_input_presented: True,
-      is_thread_input_presented: True,
-      is_thread_output_presented: True,
-      is_count_added: True,
-      is_app_owner_signed: True,
-      is_tx_not_expired: True,
-    }
-
-  complex_withdrawal_contract.withdraw(
-    mock_oracle_nft,
-    ContinueCounting,
-    Credential.Script(#""),
-    mock_continue_counting_tx(test_case),
-  )
-}
-
 test fail_continue_counting_no_ref_input() fail {
   let test_case =
     ContinueCountingTest {
