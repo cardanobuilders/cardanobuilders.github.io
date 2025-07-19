@@ -7,27 +7,35 @@ sidebarTitle: 6. Interpreting Blueprint
 
 # Lesson #06: Interpreting Blueprint
 
-In the last lesson of Aiken development, we will learn how to interpret the ultimate output of onchain code developement - the blueprint. More importantly, we will learn how to translate the blueprint into offchain code that can be used to interact with the onchain code.
+In this lesson, we will explore how to interpret the blueprint generated from onchain code development and translate it into offchain code. This blueprint serves as a bridge between the onchain and offchain worlds, enabling seamless interaction with smart contracts.
 
-## Blueprint
+## What is a Blueprint?
 
-Since [CIP57](https://cips.cardano.org/cip/CIP-57) is official, the blueprint is now a standard output of Cardano smart contract development, regardless of the way you build it. The blueprint is a JSON file that contains the following fields:
+A blueprint is a standardized JSON file introduced by [CIP57](https://cips.cardano.org/cip/CIP-57). It is the ultimate output of Cardano smart contract development and contains essential information about the contract. Regardless of the development method, the blueprint includes:
 
-- `preamble`:	An object with meta-information about the contract
-- `validators`:	An object of named validators
-- `definitions`: A registry of definition re-used across the specification
+- **`preamble`**: Meta-information about the contract.
+- **`validators`**: Named validators with type definitions and compiled code.
+- **`definitions`**: A registry of reusable definitions across the specification.
 
-Aiken is not exception, after we built and tested our contracts, we can generate the blueprint by running:
+### Generating a Blueprint
+
+To generate a blueprint using Aiken, follow these steps:
+
+1. Build your contracts by running:
 
 ```sh
 aiken build
 ```
 
-We then can find the blueprint in the `plutus.json` file in the root of our project.
+2. Locate the blueprint in the `plutus.json` file at the root of your project.
+
+## Understanding the Blueprint
 
 ### `preamble`
 
-The `preamble` session contains meta-information about the contract, such as the name, description, and version. The most important information is the `plutusVersion`, which indicates the version of Plutus that the contract is written in. This is important because in the offchain world we will need this information to prepare the code into a correctly usable format.
+The `preamble` section contains meta-information about the contract, such as its name, description, version, and Plutus version. The Plutus version is particularly important for preparing offchain code.
+
+Example:
 
 ```json
 {
@@ -35,19 +43,21 @@ The `preamble` session contains meta-information about the contract, such as the
     "title": "meshsdk/aiken-template",
     "description": "Aiken contracts for project 'meshsdk/aiken-template'",
     "version": "0.0.0",
-    "plutusVersion": "v3", // most important information!!
+    "plutusVersion": "v3", // Key information for offchain code
     "compiler": {
       "name": "Aiken",
       "version": "v1.1.16+23061c0"
     },
     "license": "Apache-2.0"
-  },
+  }
 }
 ```
 
 ### `validators`
 
-The `validators` session contains all the `parameter`, `redeemer`, and `datum` type information, as well as the actual validator code. The type definition can be referred to a particular part in the `definitions` session, which we will cover later.
+The `validators` section includes type information for `datum`, `redeemer`, and `parameters`, along with the compiled validator code. These definitions may reference reusable types in the `definitions` section.
+
+Example:
 
 ```json
 {
@@ -100,7 +110,9 @@ Notice the `spend.spending_logics_delegated.else` compiles to the same hash as t
 
 ### `definitions`
 
-The `definitions` session contains the type definitions that are referenced in the `validators` session. This is where you can find the actual schema of the types used in the contract.
+The `definitions` section provides reusable type definitions referenced in the `validators` section. This is where you can find schemas for types used in the contract.
+
+Example:
 
 ```json
 {
@@ -138,20 +150,22 @@ The `definitions` session contains the type definitions that are referenced in t
 }
 ```
 
-## Generating offchain code at ease!
+## Automating Offchain Code Generation
 
-Understanding the blueprint is crucial for Cardano development. However, in order to use it adequately, we need to obtain the precise offchain code that ties with the blueprint. This process alone can take hours to complete, as it involves translating the blueprint into offchain code that can be used to interact with the onchain code.
+Translating the blueprint into offchain code manually can be time-consuming. Fortunately, the Mesh community has developed a tool in the [`Cardano Bar VSCode Extension`](https://marketplace.visualstudio.com/items/?itemName=sidan-lab.cardano-bar-vscode) to automate this process.
 
 In Mesh community, we have developed a tool in [`Cardano Bar VSCode Extension`](https://marketplace.visualstudio.com/items/?itemName=sidan-lab.cardano-bar-vscode) that can automate this process. By running the following below steps, you can generate the offchain code that corresponds to the blueprint:
 
-1. Create a new destination TypeScript file, e.g. `offchain.ts`.
+1. Create a new TypeScript file, e.g., `offchain.ts`.
 2. Open the command palette in VSCode (Ctrl+Shift+P or Cmd+Shift+P).
 3. Type `Parse blueprint to Typescript - Mesh` and select it.
 ![VSCode command palette](../../../../../public/lessons/06-interpreting-blueprint/vscode-command.png)
-<br/>
 
 4. Select the `plutus.json` file that contains the blueprint.
 ![VSCode command palette](../../../../../public/lessons/06-interpreting-blueprint/select-blueprint.png)
-<br/>
 
-Then you can obtain the generated offchain code in the `offchain.ts` file. This code will include all the necessary functions to interact with the onchain code, such as spending, minting, and querying the contract. For guidance on how to use the Mesh `Blueprint` class, refer to the [Mesh SDK documentation](https://meshjs.dev/apis/utilities/blueprints).
+The generated `offchain.ts` file will include all necessary functions to interact with the onchain code, such as spending, minting, and querying the contract. For more details, refer to the [Mesh SDK documentation](https://meshjs.dev/apis/utilities/blueprints).
+
+## Conclusion
+
+Understanding and interpreting the blueprint is a vital skill for Cardano developers. With tools like the Mesh `Blueprint` class, you can streamline the process and focus on building robust applications.

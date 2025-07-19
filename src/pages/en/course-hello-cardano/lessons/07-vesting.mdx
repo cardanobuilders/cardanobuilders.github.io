@@ -7,9 +7,25 @@ sidebarTitle: 7. Vesting Contract
 
 # Lesson #07: Vesting Contract
 
-Vesting contract is a smart contract that locks up funds and allows the beneficiary to withdraw the funds after the lockup period.
+Vesting contracts are a type of smart contract designed to lock funds for a specified period, ensuring that only the designated beneficiary can withdraw them after the lockup period ends. This lesson will guide you through the process of understanding, implementing, and interacting with a vesting contract on Cardano.
 
-## Smart contract
+## Overview
+
+### What is a Vesting Contract?
+A vesting contract locks funds and allows the beneficiary to withdraw them after a specified lockup period. It ensures security and control over fund distribution.
+
+### Key Features:
+- **Lockup Period**: Funds are locked until a specific timestamp.
+- **Owner and Beneficiary**: The owner deposits funds, and the beneficiary withdraws them after the lockup period.
+
+## Smart Contract Details
+
+### Datum Definition
+The datum serves as the configuration for the vesting contract. It includes:
+
+- **`lock_until`**: The timestamp until which funds are locked.
+- **`owner`**: Credentials of the fund owner.
+- **`beneficiary`**: Credentials of the beneficiary.
 
 First, we define the datum's shape, as this datum serves as configuration and contains the different parameters of our vesting operation.
 
@@ -23,12 +39,6 @@ pub type VestingDatum {
   beneficiary: ByteArray,
 }
 ```
-
-In this example, we define a `VestingDatum` that contains the following fields:
-
-- `lock_until`: The POSIX timestamp in milliseconds until which the funds are locked.
-- `owner`: The credentials (public key hash) of the owner of the funds.
-- `beneficiary`: The credentials (public key hash) of the beneficiary of the funds.
 
 This datum can be found in `aiken-vesting/aiken-workspace/lib/vesting/types.ak`.
 
