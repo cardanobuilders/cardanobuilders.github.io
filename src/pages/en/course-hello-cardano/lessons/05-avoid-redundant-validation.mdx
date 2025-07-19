@@ -185,3 +185,36 @@ However, validation delegation can happen in different ways. For example, you ca
 Recall that spending validation is triggered when a UTxO is spent, and minting validation is triggered when a token is minted. By delegating to a withdrawal script, we can ensure that the common validations are performed only once, regardless of how many scripts are involved in the transaction.
 
 And the withdrawal script can be triggered by withdrawing 0 lovelace, aka the community call it [`withdraw 0 trick`](https://aiken-lang.org/fundamentals/common-design-patterns#forwarding-validation--other-withdrawal-tricks). It is a clean way to trigger the validation without affecting the transaction's logic or state.
+
+## Simplified Explanation
+
+### Why Avoid Redundant Validation?
+When multiple scripts are involved in a transaction, repeating the same checks in each script leads to inefficiencies and higher costs. Instead, centralizing common checks in a single script ensures that validations are performed only once, saving resources and simplifying logic.
+
+### Centralized Validation
+By using a single script, such as a withdrawal script, we can delegate common checks to it. This script acts as a central validator for all other scripts in the transaction.
+
+### Example Flow
+Imagine a transaction with multiple scripts:
+- **Minting Script**: Handles token creation.
+- **Spending Script**: Manages UTxO spending.
+- **Withdrawal Script**: Performs common checks.
+
+Instead of duplicating checks in each script, the withdrawal script validates all common conditions, ensuring efficiency.
+
+### Delegation in Practice
+Here’s how delegation works:
+- **Spending Validator**: Delegates validation to the withdrawal script.
+- **Minting Validator**: Also delegates validation to the withdrawal script.
+
+This approach reduces redundancy and keeps the logic clean and maintainable.
+
+### Clean Trigger with Withdrawal Script
+The withdrawal script can be triggered using the `withdraw 0 trick`, which allows validation without affecting the transaction state. This method is widely used for its simplicity and effectiveness.
+
+### Key Benefits
+- **Efficiency**: Reduces redundant checks.
+- **Cost-Effective**: Lowers transaction fees.
+- **Maintainability**: Simplifies script logic.
+
+By following this pattern, developers can create smarter and more efficient Cardano contracts.
