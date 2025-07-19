@@ -7,25 +7,26 @@ sidebarTitle: 4. Contract Testing
 
 # Lesson #04: Contract Testing
 
-After building Aiken contracts, it's important to test them to ensure they behave as expected. In this lesson, we will cover:
+Testing Aiken contracts is crucial to ensure they behave as expected. In this lesson, we will cover:
 
-- Preparing a more complex contract for testing
-- Building mock transactions in Aiken & running tests
+- Preparing a complex contract for testing
+- Building mock transactions in Aiken and running tests
 
-## Prepare a more complex contract
+## Preparing a Complex Contract
 
-We will continue using the withdrawal contract from the previous lesson. We will make the withdrawal contract do the following:
+We will enhance the withdrawal contract from the previous lesson to include two user actions: `ContinueCounting` or `StopCounting`.
 
-1. There are 2 potential user actions: `ContinueCounting` or `StopCounting`.
-2. When the user chooses `ContinueCounting`, the contract will:
-    - Verify the transaction is signed by the app owner.
-    - Verify the app is not expired (using a POSIX timestamp).
-    - Verify the state thread token is carried forward to the output.
-    - Increment the count in the state thread token's datum by 1.
-3. When the user chooses `StopCounting`, the contract will:
-    - Verify the transaction is signed by the app owner.
-    - Verify the state thread token is burned (not carried forward to any output).
-  
+1. **ContinueCounting**:
+   - Verify the transaction is signed by the app owner.
+   - Ensure the app is not expired (using a POSIX timestamp).
+   - Carry forward the state thread token to the output.
+   - Increment the count in the state thread token's datum by 1.
+
+2. **StopCounting**:
+   - Verify the transaction is signed by the app owner.
+   - Ensure the state thread token is burned (not carried forward to any output).
+
+### Contract Code
 
 ```rs
 use aiken/crypto.{VerificationKeyHash}
@@ -97,9 +98,9 @@ Notice we touch on the syntax of `expect` the first time here. `expect` is used 
 
 In the last line of `ContinueCounting` branch, you may notice the use of `?` operator. This operator is a tracing operator that helps to trace which condition fails when the validator fails. For example, if `is_app_owner_signed` is false, then the validator will fail with message `is_app_owner_signed?` which helps to identify the root cause of failure.
 
-### Validating Input & Output 
+## Validating Input & Output
 
-We continue completing the contract:
+We complete the contract by validating inputs and outputs:
 
 ```rs
 use aiken/crypto.{VerificationKeyHash}
@@ -540,4 +541,4 @@ Running `aiken check` will show:
 
 ### Exercise
 
-Try to write tests for `StopCounting` action. You can refer to the `ContinueCounting` tests for guidance. The suggested answer can be found in the code example.
+Write tests for `StopCounting` action. Refer to `ContinueCounting` tests for guidance. Suggested answers are in the code example.
