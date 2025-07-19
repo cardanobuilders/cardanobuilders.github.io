@@ -7,19 +7,23 @@ sidebarTitle: 8. Plutus NFT Contract
 
 # Lesson #08: Plutus NFT Contract
 
-After the simple vesting contract, let's level up to a more complex contract with multiple validators interacting with each other.
+After the simple vesting contract, let's level up to a more complex contract with multiple validators interacting with each other. This lesson will guide you step-by-step through the process of creating a Plutus NFT contract, ensuring clarity and simplicity.
 
-## Smart contract
+## Overview
 
-This NFT minting script enables users to mint NFTs with an automatically incremented index, which increases by one for each newly minted NFT.
+This lesson focuses on creating a smart contract for minting NFTs with an automatically incremented index. The contract ensures non-fungibility and uniqueness of the NFTs under the same policy. To achieve this, we will:
 
-To facilitate this process, the first step is to set up a one-time minting policy by minting an oracle token. This oracle token is essential as it holds the current state and index of the NFTs, acting as a reference for the minting sequence.
+1. Set up a one-time minting policy to create an oracle token.
+2. Use the oracle token to maintain the state and index of NFTs.
+3. Increment the token index with each new NFT minted.
 
-With each new NFT minted, the token index within the oracle is incremented by one, ensuring a consistent and orderly progression in the numbering of the NFTs.
+## Step 1: Oracle NFT
 
-### Oracle NFT
+The oracle NFT acts as the single source of truth for the system. It uses a state thread token to ensure consistency. We will implement a one-time minting policy for the oracle NFT.
 
-The system has a single source of truth, which is served with the state thread token. We will use an [one time minting policy](https://aiken-lang.org/fundamentals/common-design-patterns#one-shot-minting-policies) for it:
+### Code Explanation
+
+The following code defines the minting policy for the oracle NFT:
 
 ```rs
 pub type MintPolarity {
@@ -53,11 +57,15 @@ validator oracle_nft(utxo_ref: OutputReference) {
 }
 ```
 
-This will ensure the token minted is a NFT which can't be minted again, and it can only be burned.
+**Key Points:**
+- `RMint` ensures the token is minted only once.
+- `RBurn` allows the token to be burned but prevents reminting.
 
-### Oracle Validator
+## Step 2: Oracle Validator
 
-Next, we define the oracle validator that will hold the current state of the NFT index. First, let's define the datum:
+The oracle validator holds the current state of the NFT index. It defines the datum and redeemer types for state changes.
+
+### Datum Definition
 
 ```rs
 pub type OracleDatum {
@@ -67,7 +75,7 @@ pub type OracleDatum {
 }
 ```
 
-We will allow 2 distinct user actions, i.e. redeemer types, for state change:
+### Redeemer Types
 
 ```rs
 pub type OracleRedeemer {
@@ -76,7 +84,9 @@ pub type OracleRedeemer {
 }
 ```
 
-Init the spending validator:
+### Validator Logic
+
+The validator ensures the state changes are valid:
 
 ```rs
 validator oracle {
@@ -201,9 +211,15 @@ validator oracle {
 }
 ```
 
-### Plutus NFT Minting Validator
+**Key Points:**
+- `MintPlutusNFT` increments the NFT index and ensures fees are paid.
+- `StopOracle` burns the oracle NFT and requires owner authorization.
 
-The oracle validator is responsible for managing the core logic - the state - of the application, the Plutus NFT contract will then be only responsible for checking the token name and quantity, making sure the NFT is unique and non-fungible.
+## Step 3: Plutus NFT Minting Validator
+
+The Plutus NFT minting validator ensures the NFT is unique and non-fungible.
+
+### Code Explanation
 
 ```rs
 pub type MintPolarity {
@@ -237,13 +253,15 @@ validator plutus_nft(collection_name: ByteArray, oracle_nft: PolicyId) {
 }
 ```
 
-### Testing
+**Key Points:**
+- Ensures the NFT name includes the incremented index.
+- Validates the minting and burning process.
 
 The code example above is presented in [Mesh repository](https://github.com/MeshJS/mesh/tree/main/packages/mesh-contract/src/plutus-nft/aiken-workspace), you can find the equivalent tests there.
 
 ### Compile and build script
 
-To compile the script, run the following command:
+1. Compile the script using:
 
 ```sh
 aiken build
