@@ -11,7 +11,7 @@ Welcome to the first lesson of the Cardano Application Development Course! In th
 
 ## System setup
 
-Before we begin, let's prepare our system for development. We will be using Node.js and TypeScript for this course, so make sure you have them installed on your machine.
+Before we begin, let's prepare our system for development. We will be using Node.js v24+ in this course. We recommend [nvm to manage your node versions](https://github.com/nvm-sh/nvm).
 
 ### Create a package.json file
 
@@ -27,28 +27,26 @@ First, create a new `package.json` file in the root of your project with the fol
 
 ### Install the necessary packages
 
-Open your terminal and run these commands to install the required packages and MeshSDK:
+Open your terminal and run these commands to install the MeshSDK:
 
 ```bash
 npm install
-npm install tsx @meshsdk/core
+npm install @meshsdk/core
 ```
 
-Here's how your `package.json` file should look after installing the packages:
+Here's how your `package.json` file should look after installing the package:
 
 ```json
 {
   "type": "module",
   "dependencies": {
     "@meshsdk/core": "^1.9.0",
-    "tsx": "^4.19.4"
   },
   "scripts": {}
 }
 ```
 
 - `@meshsdk/core`: Core functionality for network interactions, wallets, and transactions.
-- `tsx`: Allows running TypeScript files directly from the command line.
 
 ## Create a wallet
 
@@ -125,10 +123,9 @@ Update the `package.json` file to add a script to run the code:
   "type": "module",
   "dependencies": {
     "@meshsdk/core": "^1.9.0",
-    "tsx": "^4.19.4"
   },
   "scripts": {
-    "mnemonic": "tsx mnemonic.ts"
+    "mnemonic": "node mnemonic.ts"
   }
 }
 ```
@@ -142,7 +139,7 @@ This will generate a new mnemonic phrase and wallet address for you. The output 
 
 ```bash
 > mnemonic
-> tsx mnemonic.ts
+> node mnemonic.ts
 
 Your mnemonic phrases are: [
   'access',  'spawn',   'taxi',
@@ -275,11 +272,10 @@ Update the `package.json` file to add a script to run the code:
   "type": "module",
   "dependencies": {
     "@meshsdk/core": "^1.9.0",
-    "tsx": "^4.19.4"
   },
   "scripts": {
-    "mnemonic": "tsx mnemonic.ts",
-    "send-lovelace": "tsx send-lovelace.ts"
+    "mnemonic": "node mnemonic.ts",
+    "send-lovelace": "node send-lovelace.ts"
   }
 }
 ```
@@ -294,7 +290,7 @@ This will create a transaction to send lovelace to the recipient address and sub
 
 ```bash
 > send-lovelace
-> tsx send-lovelace.ts
+> node send-lovelace.ts
 
 txBodyJson - before coin selection {"inputs":[],"outputs":[{"address":"addr_test1qpvx0sacufuypa2k4sngk7q40zc5c4npl337uusdh64kv0uafhxhu32dys6pvn6wlw8dav6cmp4pmtv7cc3yel9uu0nq93swx9","amount":[{"unit":"lovelace","quantity":"1500000"}]}],"fee":"0","collaterals":[],"requiredSignatures":[],"referenceInputs":[],"mints":[],"changeAddress":"addr_test1qp2k7wnshzngpqw0xmy33hvexw4aeg60yr79x3yeeqt3s2uvldqg2n2p8y4kyjm8sqfyg0tpq9042atz0fr8c3grjmysdp6yv3","metadata":{},"validityRange":{},"certificates":[],"withdrawals":[],"votes":[],"signingKey":[],"chainedTxs":[],"inputsForEvaluation":{},"network":"mainnet","expectedNumberKeyWitnesses":0,"expectedByronAddressWitnesses":[]}
 txBodyJson - after coin selection {"inputs":[{"type":"PubKey","txIn":{"txHash":"99d859b305ab8021e497fad0dc55373e50fffd3e7026142fa3cf5accfe0d3aab","txIndex":1,"amount":[{"unit":"lovelace","quantity":"9823719"}],"address":"addr_test1qp2k7wnshzngpqw0xmy33hvexw4aeg60yr79x3yeeqt3s2uvldqg2n2p8y4kyjm8sqfyg0tpq9042atz0fr8c3grjmysdp6yv3"}}],"outputs":[{"address":"addr_test1qpvx0sacufuypa2k4sngk7q40zc5c4npl337uusdh64kv0uafhxhu32dys6pvn6wlw8dav6cmp4pmtv7cc3yel9uu0nq93swx9","amount":[{"unit":"lovelace","quantity":"1500000"}]},{"address":"addr_test1qp2k7wnshzngpqw0xmy33hvexw4aeg60yr79x3yeeqt3s2uvldqg2n2p8y4kyjm8sqfyg0tpq9042atz0fr8c3grjmysdp6yv3","amount":[{"unit":"lovelace","quantity":"8153730"}]}],"fee":"169989","collaterals":[],"requiredSignatures":[],"referenceInputs":[],"mints":[],"changeAddress":"addr_test1qp2k7wnshzngpqw0xmy33hvexw4aeg60yr79x3yeeqt3s2uvldqg2n2p8y4kyjm8sqfyg0tpq9042atz0fr8c3grjmysdp6yv3","metadata":{},"validityRange":{},"certificates":[],"withdrawals":[],"votes":[],"signingKey":[],"chainedTxs":[],"inputsForEvaluation":{"99d859b305ab8021e497fad0dc55373e50fffd3e7026142fa3cf5accfe0d3aab1":{"input":{"outputIndex":1,"txHash":"99d859b305ab8021e497fad0dc55373e50fffd3e7026142fa3cf5accfe0d3aab"},"output":{"address":"addr_test1qp2k7wnshzngpqw0xmy33hvexw4aeg60yr79x3yeeqt3s2uvldqg2n2p8y4kyjm8sqfyg0tpq9042atz0fr8c3grjmysdp6yv3","amount":[{"unit":"lovelace","quantity":"9823719"}]}}},"network":"mainnet","expectedNumberKeyWitnesses":0,"expectedByronAddressWitnesses":[]}
