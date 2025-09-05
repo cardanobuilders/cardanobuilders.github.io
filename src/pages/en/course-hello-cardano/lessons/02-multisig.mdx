@@ -205,6 +205,7 @@ const unsignedTx = await txBuilder
   .metadataValue(721, metadata)
   .changeAddress(changeAddress)
   .invalidHereafter(99999999)
+  .requiredSignerHash(keyHash)
   .selectUtxosFrom(inputs)
   .complete();
 ```
@@ -215,6 +216,7 @@ const unsignedTx = await txBuilder
 - `changeAddress`: Specify the change address.
 - `invalidHereafter`: Set transaction expiry.
 - `selectUtxosFrom`: Use UTxOs for fees.
+- `requiredSignerHash` to declare that the minter wallet pub key hash is required.
 - `complete`: Finalize the transaction.
 
 ### Sign the Transaction
@@ -222,7 +224,7 @@ const unsignedTx = await txBuilder
 Sign the transaction with the minting wallet:
 
 ```ts
-const signedTx = await wallet.signTx(unsignedTx);
+const signedTx = await wallet.signTx(unsignedTx, true);
 ```
 
 ### Source code
@@ -278,10 +280,11 @@ async function buildMintTx(inputs: UTxO[], changeAddress: string) {
     .metadataValue(721, metadata)
     .changeAddress(changeAddress)
     .invalidHereafter(99999999)
+    .requiredSignerHash(keyHash)
     .selectUtxosFrom(inputs)
     .complete();
 
-  const signedTx = await wallet.signTx(unsignedTx);
+  const signedTx = await wallet.signTx(unsignedTx, true);
   return signedTx;
 }
 ```
@@ -297,7 +300,7 @@ async function mint() {
     const changeAddress = await wallet.getChangeAddress();
 
     const tx = await buildMintTx(inputs, changeAddress);
-    const signedTx = await wallet.signTx(tx);
+    const signedTx = await wallet.signTx(tx, true);
 
     const txHash = await wallet.submitTx(signedTx);
     console.log("Transaction hash:", txHash);
