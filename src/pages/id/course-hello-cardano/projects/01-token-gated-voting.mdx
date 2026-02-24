@@ -1,0 +1,48 @@
+---
+title: Token-Gated Voting
+description: Bangun sistem voting di Cardano di mana hanya pemegang governance token yang dapat memberikan suara, menggunakan smart contract Aiken dan Mesh SDK.
+asIndexPage: true
+sidebarTitle: 1. Token-Gated Voting
+---
+
+# Proyek #01: Token-Gated Voting
+
+**Kesulitan:** Menengah | **Pelajaran:** 1–6
+
+Bangun sistem voting di mana hanya pemegang governance token tertentu yang dapat memberikan suara pada proposal.
+
+## Persyaratan
+
+### 1. Governance Token Minting Policy
+
+Tulis minting validator Aiken yang memungkinkan admin yang ditunjuk untuk mencetak sejumlah tetap governance token di bawah satu policy ID.
+
+### 2. Voting Validator
+
+Tulis spending validator Aiken yang:
+- Menerima suara (ya/tidak) sebagai redeemer
+- Memverifikasi bahwa transaksi menyertakan setidaknya satu governance token di input
+- Menyimpan hasil penghitungan suara di datum (total suara ya, total suara tidak)
+- Mencegah voting ganda dengan mewajibkan tanda tangan unik per pemilih untuk setiap proposal
+
+### 3. Pengujian Contract
+
+Tulis test case menggunakan `aiken check` yang mencakup:
+- Voting berhasil dengan governance token
+- Voting ditolak tanpa governance token
+- Voting ganda ditolak dari key yang sama
+
+### 4. Kode Off-Chain
+
+Menggunakan Mesh SDK:
+- Interpretasi Plutus blueprint untuk menghasilkan tipe TypeScript
+- Bangun transaksi untuk membuat proposal, memberikan suara, dan membaca hasil
+- Sediakan script yang dapat dijalankan untuk mendemonstrasikan alur lengkap di preprod
+
+## Keterampilan yang Ditunjukkan
+
+- Pengaturan wallet dan pembangunan transaksi (Pelajaran 1)
+- Minting token dengan native/Plutus script (Pelajaran 2–3)
+- Pengembangan validator Aiken (Pelajaran 3)
+- Pengujian contract dengan mocktail (Pelajaran 4)
+- Interpretasi blueprint dan kode off-chain (Pelajaran 6)

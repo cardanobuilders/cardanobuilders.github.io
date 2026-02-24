@@ -1,0 +1,42 @@
+---
+title: Proyek
+description: Selesaikan tiga proyek untuk menunjukkan keterampilan pengembangan Cardano Anda dan dapatkan lencana kursus Hello Cardano.
+asIndexPage: true
+sidebarTitle: Pengantar
+---
+
+import { Callout } from 'nextra/components'
+
+# Proyek
+
+Selesaikan ketiga proyek di bawah ini untuk mendapatkan lencana kursus **Hello Cardano** Anda. Setiap proyek dibangun berdasarkan keterampilan dari pelajaran kursus, berkembang dari tingkat menengah hingga lanjutan.
+
+<Callout type="info" emoji="📋">
+  **Pengumpulan:** Untuk setiap proyek, push kode Anda ke repositori GitHub publik dan kirimkan tautan repo beserta hash transaksi preprod yang menunjukkan implementasi Anda yang berfungsi.
+</Callout>
+
+## Ringkasan
+
+| # | Proyek | Tingkat Kesulitan | Pelajaran |
+|---|--------|-------------------|-----------|
+| 1 | [Token-Gated Voting](/id/course-hello-cardano/projects/01-token-gated-voting) | Menengah | 1–6 |
+| 2 | [Peer-to-Peer Escrow](/id/course-hello-cardano/projects/02-escrow-marketplace) | Lanjutan | 1–8 |
+| 3 | [Full-Stack Sponsored dApp](/id/course-hello-cardano/projects/03-full-stack-dapp) | Ahli | 1–10 |
+
+## Panduan Pengumpulan
+
+Untuk mendapatkan lencana **Hello Cardano** Anda, kumpulkan ketiga proyek:
+
+1. **Repositori GitHub**: Push setiap proyek ke repositori GitHub publik (satu repo per proyek atau monorepo dengan direktori terpisah). Setiap proyek harus mencakup:
+   - `README.md` dengan instruksi setup
+   - Semua kode sumber Aiken dan blueprint yang sudah dikompilasi
+   - Semua kode off-chain TypeScript
+   - Hasil test (screenshot atau output CI dari `aiken check`)
+
+2. **Hash Transaksi Preprod**: Untuk setiap proyek, sediakan minimal satu hash transaksi preprod yang menunjukkan implementasi Anda yang berfungsi. Tautkan ke [preprod.cardanoscan.io](https://preprod.cardanoscan.io) agar peninjau dapat memverifikasi di on-chain.
+
+3. **Kirim**: Kirimkan tautan repositori dan hash transaksi Anda ke tim kursus untuk ditinjau.
+
+<Callout type="warning" emoji="⚠️">
+  Semua smart contract harus di-deploy ke **Cardano preprod testnet**. Jangan gunakan mainnet untuk pengumpulan tugas kursus.
+</Callout>

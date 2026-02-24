@@ -1,0 +1,65 @@
+---
+title: Full-Stack Sponsored dApp
+description: Bangun aplikasi Cardano full-stack lengkap dengan smart contract, social login, sponsorship transaksi, dan integrasi opsional Hydra Layer 2.
+asIndexPage: true
+sidebarTitle: 3. Full-Stack dApp
+---
+
+import { Callout } from 'nextra/components'
+
+# Proyek #03: Full-Stack Sponsored dApp (Capstone)
+
+**Kesulitan:** Ahli | **Pelajaran:** 1–10
+
+Bangun aplikasi Cardano full-stack lengkap yang menggabungkan smart contract, frontend web, social login, dan sponsorship transaksi.
+
+## Pilih Aplikasi Anda
+
+Pilih salah satu ide berikut (atau ajukan ide Anda sendiri):
+- **Sponsored NFT Marketplace**: Pengguna mencetak dan memperdagangkan NFT tanpa perlu memiliki ADA
+- **Donation Platform**: Pengguna berdonasi untuk tujuan terverifikasi dengan bukti on-chain
+- **Ticket System**: Penyelenggara acara menerbitkan tiket NFT, peserta mengklaim dengan social login
+
+## Persyaratan
+
+Apa pun aplikasi yang dipilih, proyek Anda harus mencakup:
+
+### 1. Smart Contract
+
+Minimal satu validator Aiken yang di-deploy ke preprod dengan:
+- Test suite lengkap yang lolos melalui `aiken check`
+- Blueprint digunakan untuk pembuatan kode off-chain
+
+### 2. Frontend NextJS
+
+Aplikasi web dengan:
+- Integrasi Wallet-as-a-Service (social login melalui UTXOS atau penyedia serupa)
+- UI yang bersih di mana pengguna dapat berinteraksi dengan smart contract Anda
+- Umpan balik status transaksi (pending, submitted, confirmed)
+
+### 3. Sponsorship Transaksi
+
+Alur sponsorship di sisi server di mana:
+- Pengguna membayar nol biaya untuk setidaknya satu jenis transaksi
+- API key dan signing key disimpan di sisi server
+- Pola proxy Blockfrost dari Pelajaran 10 digunakan
+
+### 4. Integrasi Hydra (Bonus)
+
+<Callout type="info" emoji="⭐">
+  Bagian ini adalah kredit bonus opsional.
+</Callout>
+
+Untuk kredit tambahan, tambahkan komponen Layer 2:
+- Gunakan Hydra untuk interaksi frekuensi tinggi (voting cepat, game move, atau batch processing)
+- Demonstrasikan siklus hidup open, transact, close
+- Tunjukkan penyelesaian akhir di Layer 1
+
+## Keterampilan yang Ditunjukkan
+
+- Penguasaan penuh Mesh SDK (Pelajaran 1–2)
+- Pengembangan dan pengujian smart contract (Pelajaran 3–5)
+- Kode off-chain berbasis blueprint (Pelajaran 6)
+- Pola contract tingkat aplikasi (Pelajaran 7–8)
+- Skalabilitas Layer 2 dengan Hydra (Pelajaran 9)
+- Layanan Web3 dan onboarding pengguna (Pelajaran 10)

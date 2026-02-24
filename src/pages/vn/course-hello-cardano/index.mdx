@@ -1,0 +1,72 @@
+---
+title: Hello Cardano
+description: Học cách xây dựng ứng dụng trên Cardano từ đầu đến cuối, từ smart contract đến ứng dụng front-end sử dụng Aiken và Mesh SDK.
+asIndexPage: true
+sidebarTitle: Giới thiệu
+---
+
+# Hello Cardano
+
+Khóa học này đưa bạn từ con số không đến việc xây dựng các ứng dụng full-stack trên Cardano. Qua 10 bài học thực hành, bạn sẽ viết smart contract với [Aiken](https://aiken-lang.org/), xây dựng giao dịch với [Mesh SDK](https://meshjs.dev/), và triển khai các ứng dụng hoạt động trên blockchain Cardano.
+
+Khi hoàn thành khóa học này, bạn sẽ có kinh nghiệm thực tế với ví (wallet), giao dịch, phát triển smart contract, kiểm thử và mở rộng Layer 2.
+
+## Điều kiện tiên quyết
+
+- **TypeScript**: Cần có kiến thức cơ bản về TypeScript. Khóa học tập trung vào các khái niệm Cardano, không phải các kiến thức nền tảng ngôn ngữ.
+- **Node.js v24+**: Cần thiết để chạy mã nguồn bài học. Chúng tôi khuyên bạn nên sử dụng [nvm](https://github.com/nvm-sh/nvm) để quản lý các phiên bản Node của bạn.
+- **Không cần kinh nghiệm blockchain**: Mỗi bài học đều xây dựng trên bài trước, bắt đầu từ những kiến thức cơ bản nhất.
+
+## Nội dung khóa học
+
+### Bài 1: Hello World
+Thiết lập Mesh SDK, tạo ví với `MeshWallet`, và gửi giao dịch lovelace đầu tiên của bạn sử dụng `MeshTxBuilder`.
+[Mã nguồn](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/01-wallet-send-lovelace)
+
+### Bài 2: Giao dịch đa chữ ký
+Xây dựng giao dịch đa chữ ký để mint token sử dụng native script và thiết lập giao diện NextJS để tương tác với blockchain Cardano.
+[Mã nguồn](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/02-multisig)
+
+### Bài 3: Hợp đồng Aiken
+Học các kiến thức cơ bản về smart contract Aiken, bao gồm các validator cho minting, spending và withdrawal với transaction context.
+[Mã nguồn](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/03-aiken-contracts)
+
+### Bài 4: Kiểm thử hợp đồng
+Kiểm thử smart contract Aiken sử dụng mock transaction, thư viện mocktail và tạo trường hợp lỗi đồng với `aiken check`.
+[Mã nguồn](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/04-contract-testing)
+
+### Bài 5: Tránh xác thực dư thừa
+Giảm chi phí on-chain bằng cách tập trung logic xác thực chung vào withdrawal script sử dụng mô hình withdraw-zero.
+[Mã nguồn](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/05-avoid-redundant-validation)
+
+### Bài 6: Giải thích Blueprint
+Giải thích CIP-57 Plutus blueprint từ các hợp đồng Aiken và tạo mã TypeScript off-chain sử dụng Mesh SDK.
+[Mã nguồn](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/06-interpreting-blueprint)
+
+### Bài 7: Hợp đồng Vesting
+Xây dựng smart contract vesting để khóa tiền và cho phép người thụ hưởng rút tiền sau thời gian khóa.
+[Mã nguồn](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/07-vesting)
+
+### Bài 8: Hợp đồng Plutus NFT
+Tạo hợp đồng Plutus NFT với nhiều validator, oracle token và chỉ số tự động tăng để đảm bảo tính không thể thay thế.
+
+### Bài 9: Hydra từ đầu đến cuối
+Khám phá Hydra, giải pháp mở rộng Layer 2 của Cardano, thông qua hướng dẫn từ đầu đến cuối về state channel giữa hai người tham gia.
+
+### Bài 10: Dịch vụ Web3
+Tích hợp dịch vụ ví (wallet-as-a-service) và tài trợ giao dịch để đưa người dùng vào ứng dụng Cardano của bạn một cách liền mạch.
+
+## Công cụ và tài nguyên
+
+- **[Aiken](https://aiken-lang.org/)**: Ngôn ngữ để viết smart contract Cardano hiệu quả.
+- **[Mesh SDK](https://meshjs.dev/)**: SDK TypeScript để xây dựng giao dịch và tương tác với blockchain Cardano.
+- **[Blockfrost](https://blockfrost.io/)**: Nhà cung cấp API blockchain để truy vấn mạng Cardano.
+- **[Cardano Preprod Testnet Faucet](https://docs.cardano.org/cardano-testnets/tools/faucet)**: Nhận lovelace thử nghiệm để phát triển.
+
+## Mã nguồn
+
+Tất cả mã nguồn cho khóa học này có sẵn trên [GitHub](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano).
+
+## Bắt đầu
+
+Bắt đầu với [Bài 1: Hello World](/vn/course-hello-cardano/lessons/01-wallet-send-lovelace) để thiết lập môi trường và gửi giao dịch đầu tiên của bạn.

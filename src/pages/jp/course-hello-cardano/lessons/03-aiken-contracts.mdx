@@ -1,0 +1,266 @@
+---
+title: Aikenコントラクト
+description: ミント、スペンディング、引き出しvalidatorなど、トランザクションコンテキストを含むCardano上のAikenスマートコントラクトの基礎を学びます。
+asIndexPage: true
+sidebarTitle: 3. Aikenコントラクト
+---
+
+# レッスン #03: Aikenコントラクト
+
+レッスン3から6では、Aikenスマートコントラクト構築のコアコンセプトを扱います。一部の教材は[AndamioのAikenPBL](https://app.andamio.io/course/db22e013578fcead6c2fed5446d61891ad31f3cb4955e88d980107e7)から参照しています。
+
+### 概要
+
+- **Hello Cardanoコース**: Aikenスマートコントラクト開発の重要なコンセプトを厳選して扱います。
+- **AikenPBL**: 基礎的かつ本質的なコンセプトを網羅する、エンドツーエンドのプロジェクトベース学習コースです。
+
+Aikenスマートコントラクト開発は専門的な分野です。より深く学び、Cardanoオンチェーン開発者としてのキャリアを目指す方は、両方のコースを修了することをお勧めします。
+
+> ソースコード: [GitHub](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/03-aiken-contracts)
+
+## システムセットアップ
+
+以下のガイドのいずれかを使ってAikenをインストールします:
+
+1. [Aiken公式インストールガイド](https://aiken-lang.org/installation-instructions)
+2. [AndamioのAikenPBLセットアップガイド](https://app.andamio.io/course/db22e013578fcead6c2fed5446d61891ad31f3cb4955e88d980107e7/101/lesson/1)
+
+### 空のAikenプロジェクトのセットアップ
+
+以下のコマンドを実行して、Meshのテンプレートを使った新しいAikenプロジェクトを作成します:
+
+```bash
+npx meshjs 03-aiken-contracts
+```
+
+プロンプトで`Aiken`テンプレートを選択します。
+
+![CLIでの選択](../../../../../public/lessons/03-aiken-contracts/mesh-aiken-template.png)
+
+インストール後、以下の構造で`03-aiken-contracts`フォルダが作成されます:
+
+```
+03-aiken-contracts
+├── aiken-workspace  // レッスンで使用するメインのAikenプロジェクトフォルダ
+└── mesh             // 同等のMeshオフチェーンコード用フォルダ（レッスンでは使用しません）
+```
+
+### オプション: Cardano-Barのインストール
+
+VSCodeをIDEとして使用している場合は、[Cardano-Bar](https://marketplace.visualstudio.com/items/?itemName=sidan-lab.cardano-bar-vscode)拡張機能をインストールすると、コースをより容易に進められるコードスニペットが利用できます。
+
+![Aikenスクリプト情報](../../../../../public/lessons/03-aiken-contracts/cardano-bar.png)
+
+## トランザクションコンテキストの理解
+
+Cardanoのコントラクトは他のブロックチェーンのスマートコントラクトとは異なる仕組みで動作します。トランザクションが有効かどうかを判定するバリデーションルールとして機能します。Cardanoのコントラクトには**validator**という用語がより正確です。
+
+validatorを構築するにはトランザクションの仕組みを理解する必要があります。完全な`Transaction`構造については[Aikenドキュメント](https://aiken-lang.github.io/stdlib/cardano/transaction.html#Transaction)を参照してください。
+
+![Aiken Tx](../../../../../public/lessons/03-aiken-contracts/aiken-tx.png)
+
+### インプットとアウトプット
+
+すべてのCardanoトランザクションにはインプットとアウトプットが必要です:
+- **インプット**: トランザクションで消費されるUTXOです。
+- **アウトプット**: トランザクションで作成されるUTXOです。
+
+型の定義については[Aikenドキュメント](https://aiken-lang.github.io/stdlib/cardano/transaction.html#Input)を参照してください:
+
+![Input](../../../../../public/lessons/03-aiken-contracts/input.png)
+![Output](../../../../../public/lessons/03-aiken-contracts/output.png)
+
+主要なコンセプト:
+- インプットは前のトランザクションのアウトプットを`output_reference`で参照します。
+- validatorは以下を検証できます:
+  - インプットが特定のアドレスから消費するかどうか。
+  - インプットが特定のアセットを消費するかどうか。
+  - アウトプットが特定のアドレスに送信するかどうか。
+  - アウトプットが特定のアセットを送信するかどうか。
+  - インプット/アウトプットのdatumに特定の情報が含まれるかどうか。
+
+### リファレンスインプット
+
+`Transaction`の`reference_inputs`は、消費されずにvalidatorで参照されるインプットです。UTXOを消費せずにdatumを読み取る場合に便利です。
+
+### ミント
+
+`Transaction`の`mint`は、ミントまたはバーンされるアセットのリストです。トークンの作成やバーンに使用します。
+
+### 署名
+
+`Transaction`の`extra_signatories`は、トランザクションの署名に必要な公開鍵hashのリストです。特定のユーザーに署名を強制する場合に使用します。
+
+### 時間
+
+`Transaction`の`validity_range`は、トランザクションが有効なスロットの範囲を指定します。タイムロックの適用に使用します。
+
+## スクリプトの種類
+
+スクリプトの種類については[Aikenドキュメント](https://aiken-lang.github.io/stdlib/cardano/script_context.html#ScriptContext)を参照してください。最も一般的なものは以下です:
+- **ミント**
+- **スペンディング**
+- **引き出し**
+
+![Aikenスクリプト情報](../../../../../public/lessons/03-aiken-contracts/scriptinfo.png)
+
+### ミントスクリプト
+
+ミントスクリプトのバリデーションは、スクリプトのポリシーの下でアセットがミントまたはバーンされたときにトリガーされます。
+
+例: `/aiken-workspace/validators/mint.ak`:
+
+```rs
+use cardano/assets.{PolicyId}
+use cardano/transaction.{Transaction, placeholder}
+
+validator always_succeed {
+  mint(_redeemer: Data, _policy_id: PolicyId, _tx: Transaction) {
+    True
+  }
+
+  else(_) {
+    fail @"unsupported purpose"
+  }
+}
+
+test test_always_succeed_minting_policy() {
+  let data = Void
+  always_succeed.mint(data, #"", placeholder)
+}
+```
+
+このスクリプトはhash `def68337867cb4f1f95b6b811fedbfcdd7780d10a95cc072077088ea`（`policy Id`とも呼ばれる）を持つスクリプトにコンパイルされます。このポリシーの下でアセットをミントまたはバーンするトランザクションをバリデーションします。
+
+#### パラメータ
+
+特定のキーで署名された場合のみミント/バーンを許可するようにスクリプトをアップグレードします:
+
+```rs
+validator minting_policy(owner_vkey: VerificationKeyHash) {
+  mint(_redeemer: Data, _policy_id: PolicyId, tx: Transaction) {
+    key_signed(tx.extra_signatories, owner_vkey)
+  }
+
+  else(_) {
+    fail @"unsupported purpose"
+  }
+}
+```
+
+- `owner_vkey`: アセットのミント/バーンを許可されたオーナーの公開鍵hashです。
+- バリデーションには[vodka](https://github.com/sidan-lab/vodka)の`key_signed`を使用します。
+
+#### Redeemer
+
+ポリシーを拡張して、トランザクションのアクション（ミントまたはバーン）を指定するredeemerを含めます:
+
+```rs
+pub type MyRedeemer {
+  MintToken
+  BurnToken
+}
+
+validator minting_policy(
+  owner_vkey: VerificationKeyHash,
+  minting_deadline: Int,
+) {
+  mint(redeemer: MyRedeemer, policy_id: PolicyId, tx: Transaction) {
+    when redeemer is {
+      MintToken -> {
+        let before_deadline = valid_before(tx.validity_range, minting_deadline)
+        let is_owner_signed = key_signed(tx.extra_signatories, owner_vkey)
+        before_deadline? && is_owner_signed?
+      }
+      BurnToken -> check_policy_only_burn(tx.mint, policy_id)
+    }
+  }
+
+  else(_) {
+    fail @"unsupported purpose"
+  }
+}
+```
+
+### スペンディングスクリプト
+
+スペンディングスクリプトのバリデーションは、スクリプトアドレスにあるUTXOがトランザクションで消費されたときにトリガーされます。
+
+例: `/aiken-workspace/validators/spend.ak`:
+
+```rs
+pub type Datum {
+  oracle_nft: PolicyId,
+}
+
+validator hello_world {
+  spend(
+    datum_opt: Option<Datum>,
+    _redeemer: Data,
+    _input: OutputReference,
+    tx: Transaction,
+  ) {
+    when datum_opt is {
+      Some(datum) ->
+        when inputs_with_policy(tx.reference_inputs, datum.oracle_nft) is {
+          [_ref_input] -> True
+          _ -> False
+        }
+      None -> False
+    }
+  }
+
+  else(_) {
+    fail @"unsupported purpose"
+  }
+}
+```
+
+#### Datum
+
+- `Datum`: スクリプトアドレスのUTXOに添付されるデータです。
+- 一般的な設計パターン: oracle NFT（ステートスレッドトークン）を使用してUTXOの一意性を保証します。
+
+### 引き出しスクリプト
+
+引き出しスクリプトのバリデーションは、リワードアカウントから引き出しを行う際にトリガーされます。
+
+例: `/aiken-workspace/validators/withdraw.ak`:
+
+```rs
+use aiken/crypto.{VerificationKeyHash}
+use cardano/address.{Credential, Script}
+use cardano/certificate.{Certificate}
+use cardano/transaction.{Transaction, placeholder}
+
+validator always_succeed(_key_hash: VerificationKeyHash) {
+  withdraw(_redeemer: Data, _credential: Credential, _tx: Transaction) {
+    True
+  }
+
+  publish(_redeemer: Data, _certificate: Certificate, _tx: Transaction) {
+    True
+  }
+
+  else(_) {
+    fail @"unsupported purpose"
+  }
+}
+
+test test_always_succeed_withdrawal_policy() {
+  let data = Void
+  always_succeed.withdraw("", data, Script(#""), placeholder)
+}
+```
+
+#### パブリッシュの処理
+
+すべての引き出しスクリプトは使用前にオンチェーンで登録する必要があります。これはスクリプトhashをステーク資格情報として登録証明書を発行することで行います。スクリプトのパブリッシュは引き出しスクリプト内の`publish`関数でもバリデーションされ、現在の引き出しスクリプトが登録または登録解除される際にトリガーされます。
+
+#### 引き出しスクリプトの用途
+
+ほとんどのCardanoユーザーは標準的な支払いキーを使ってステーキングとリワードの引き出しを行います。しかし、CardanoのDAppではバリデーション効率を向上させるために引き出しスクリプトがよく使用されます。この技術は[レッスン5](./05-avoid-redundant-validation.mdx)で扱います。
+
+## ソースコード
+
+このレッスンのソースコードは[GitHub](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/03-aiken-contracts)で公開されています。

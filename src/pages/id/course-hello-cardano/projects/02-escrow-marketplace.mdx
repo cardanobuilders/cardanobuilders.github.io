@@ -1,0 +1,59 @@
+---
+title: Peer-to-Peer Escrow
+description: Bangun smart contract escrow di Cardano dengan penandatanganan multi-pihak, sengketa berbasis waktu, dan pelacakan state on-chain menggunakan Aiken dan Mesh SDK.
+asIndexPage: true
+sidebarTitle: 2. P2P Escrow
+---
+
+# Proyek #02: Peer-to-Peer Escrow dengan Penyelesaian Sengketa
+
+**Kesulitan:** Lanjutan | **Pelajaran:** 1–8
+
+Bangun smart contract escrow di mana pembeli mengunci dana, penjual mengirimkan barang, dan mediator independen menyelesaikan sengketa.
+
+## Persyaratan
+
+### 1. Escrow Validator
+
+Tulis spending validator Aiken dengan tiga kemungkinan hasil:
+- **Release**: Pembeli menandatangani untuk melepaskan dana ke penjual
+- **Refund**: Penjual menandatangani untuk mengembalikan dana ke pembeli
+- **Dispute**: Jika tidak ada pihak yang bertindak dalam periode timeout yang dapat dikonfigurasi, mediator dapat melakukan arbitrase dan mengirim dana ke salah satu pihak
+
+### 2. Withdraw-Zero Shared Validation
+
+Gunakan pola withdraw-zero (Pelajaran 5) untuk memusatkan pemeriksaan umum (tanda tangan yang valid, logika timeout) dalam withdrawal validator, mengurangi ukuran script di jalur release, refund, dan dispute.
+
+### 3. Pelacakan State
+
+Gunakan datum bergaya oracle (terinspirasi dari Pelajaran 8) untuk melacak state escrow di on-chain:
+- `Created`: dana terkunci, menunggu pengiriman
+- `Delivered`: penjual mengklaim telah mengirim, menunggu konfirmasi pembeli
+- `Resolved`: dana dilepaskan ke pihak yang sesuai
+
+### 4. Pengujian Contract
+
+Tulis pengujian komprehensif yang mencakup:
+- Release berhasil oleh pembeli setelah pengiriman
+- Refund berhasil oleh penjual sebelum pengiriman
+- Penyelesaian mediator yang dipicu oleh timeout
+- Release ditolak tanpa tanda tangan pembeli
+- Dispute ditolak sebelum timeout berakhir
+
+### 5. Kode Off-Chain
+
+Sediakan script yang dapat dijalankan untuk siklus hidup lengkap:
+- Membuat escrow (mengunci dana dengan datum yang menentukan pembeli, penjual, mediator, timeout)
+- Menandai sebagai terkirim (penjual memperbarui state)
+- Melepaskan dana (pembeli mengonfirmasi)
+- Penyelesaian sengketa (mediator bertindak setelah timeout)
+
+## Keterampilan yang Ditunjukkan
+
+- Pembangunan transaksi dan penandatanganan multi-pihak (Pelajaran 1–2)
+- Validator Aiken dengan logika redeemer yang kompleks (Pelajaran 3)
+- Pengujian contract yang menyeluruh (Pelajaran 4)
+- Pola withdraw-zero untuk shared validation (Pelajaran 5)
+- Interpretasi blueprint (Pelajaran 6)
+- Logika unlock berbasis waktu (Pelajaran 7)
+- Pengelolaan state on-chain dengan datum (Pelajaran 8)

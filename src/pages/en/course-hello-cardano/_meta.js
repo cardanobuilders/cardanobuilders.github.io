@@ -4,10 +4,11 @@ export default {
     title: "Lessons",
     route: "/lesson",
   },
-  project: {},
+  projects: {
+    title: "Projects",
+  },
   workshops: {
     title: "Workshops",
     route: "/workshops",
   },
-  mentoring: {},
 };

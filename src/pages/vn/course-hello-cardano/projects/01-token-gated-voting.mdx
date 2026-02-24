@@ -1,0 +1,48 @@
+---
+title: Bỏ Phiếu Có Token Gate
+description: Xây dựng hệ thống bỏ phiếu trên Cardano nơi chỉ những người nắm giữ token quản trị mới có thể bỏ phiếu, sử dụng smart contract Aiken và Mesh SDK.
+asIndexPage: true
+sidebarTitle: 1. Bỏ Phiếu Có Token Gate
+---
+
+# Dự Án #01: Bỏ Phiếu Có Token Gate
+
+**Độ khó:** Trung cấp | **Bài học:** 1–6
+
+Xây dựng hệ thống bỏ phiếu nơi chỉ những người nắm giữ một token quản trị cụ thể mới có thể bỏ phiếu cho các đề xuất.
+
+## Yêu Cầu
+
+### 1. Chính Sách Đúc Token Quản Trị
+
+Viết một validator đúc tiền bằng Aiken cho phép quản trị viên được chỉ định đúc một lượng cố định token quản trị dưới một policy ID duy nhất.
+
+### 2. Validator Bỏ Phiếu
+
+Viết một validator chi tiêu bằng Aiken mà:
+- Chấp nhận một phiếu bầu (có/không) làm redeemer
+- Xác minh giao dịch bao gồm ít nhất một token quản trị trong các đầu vào
+- Lưu trữ kết quả kiểm phiếu trong datum (tổng phiếu đồng ý, tổng phiếu không đồng ý)
+- Ngăn chặn bỏ phiếu trùng lặp bằng cách yêu cầu chữ ký duy nhất của cử tri cho mỗi đề xuất
+
+### 3. Kiểm Thử Hợp Đồng
+
+Viết các test case sử dụng `aiken check` bao gồm:
+- Bỏ phiếu thành công với token quản trị
+- Từ chối bỏ phiếu khi không có token quản trị
+- Từ chối bỏ phiếu trùng lặp từ cùng một khóa
+
+### 4. Mã Off-Chain
+
+Sử dụng Mesh SDK:
+- Phân tích Plutus blueprint để tạo các kiểu TypeScript
+- Xây dựng giao dịch để tạo đề xuất, bỏ phiếu và đọc kết quả
+- Cung cấp một script chạy được để minh họa toàn bộ quy trình trên preprod
+
+## Kỹ Năng Được Thể Hiện
+
+- Thiết lập ví và xây dựng giao dịch (Bài 1)
+- Đúc token với các script native/Plutus (Bài 2–3)
+- Phát triển validator bằng Aiken (Bài 3)
+- Kiểm thử hợp đồng với mocktail (Bài 4)
+- Phân tích blueprint và mã off-chain (Bài 6)

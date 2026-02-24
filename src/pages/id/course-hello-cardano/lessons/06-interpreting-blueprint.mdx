@@ -1,0 +1,175 @@
+---
+title: Memahami Blueprint
+description: Memahami blueprint Plutus CIP-57 dari smart contract Aiken dan menghasilkan kode offchain TypeScript menggunakan Mesh SDK.
+asIndexPage: true
+sidebarTitle: 6. Memahami Blueprint
+---
+
+# Pelajaran #06: Memahami Blueprint
+
+Plutus blueprint adalah jembatan antara kode on-chain dan off-chain. Pelajaran ini membahas cara memahami blueprint yang dihasilkan oleh Aiken dan menerjemahkannya menjadi kode offchain TypeScript untuk berinteraksi dengan smart contract Anda.
+
+> Source code: [GitHub](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/06-interpreting-blueprint)
+
+## Apa itu Blueprint?
+
+Blueprint adalah file JSON terstandarisasi yang didefinisikan oleh [CIP-57](https://cips.cardano.org/cip/CIP-57). File ini merupakan output utama dari kompilasi smart contract Cardano dan berisi semua yang dibutuhkan untuk berinteraksi dengan kontrak tersebut. Setiap blueprint mencakup:
+
+- **`preamble`**: Informasi meta tentang kontrak.
+- **`validators`**: Validator yang diberi nama beserta definisi tipe dan kode yang telah dikompilasi.
+- **`definitions`**: Registri definisi yang dapat digunakan kembali di seluruh spesifikasi.
+
+### Membuat Blueprint
+
+Buat blueprint dengan Aiken:
+
+1. Build kontrak Anda:
+
+```sh
+aiken build
+```
+
+2. Temukan blueprint di file `plutus.json` pada root proyek Anda.
+
+## Memahami Isi Blueprint
+
+### `preamble`
+
+`preamble` berisi metadata kontrak: nama, deskripsi, versi, dan versi Plutus. Versi Plutus sangat penting untuk persiapan kode offchain.
+
+Contoh:
+
+```json
+{
+  "preamble": {
+    "title": "meshsdk/aiken-template",
+    "description": "Aiken contracts for project 'meshsdk/aiken-template'",
+    "version": "0.0.0",
+    "plutusVersion": "v3", // Key information for offchain code
+    "compiler": {
+      "name": "Aiken",
+      "version": "v1.1.16+23061c0"
+    },
+    "license": "Apache-2.0"
+  }
+}
+```
+
+### `validators`
+
+Bagian `validators` berisi informasi tipe untuk `datum`, `redeemer`, dan `parameters`, beserta kode validator yang telah dikompilasi. Tipe-tipe tersebut mungkin mereferensikan definisi yang dapat digunakan kembali dari bagian `definitions`.
+
+Contoh:
+
+```json
+{
+  "title": "spend.spending_logics_delegated.spend",
+  "datum": {
+    "title": "_datum_opt",
+    "schema": {
+      "$ref": "#/definitions/Data"
+    }
+  },
+  "redeemer": {
+    "title": "_redeemer",
+    "schema": {
+      "$ref": "#/definitions/Data"
+    }
+  },
+  "parameters": [
+    {
+      "title": "delegated_withdrawal_script_hash",
+      "schema": {
+        "$ref": "#/definitions/aiken~1crypto~1ScriptHash"
+      }
+    }
+  ],
+  "compiledCode": "58ac010100229800aba2aba1aba0aab9faab9eaab9dab9a9bae0024888888896600264646644b30013370e900118039baa001899914c004c03400a601a601c0052259800800c528456600266ebc00cc02cc03c00629462660040046020002805100d2444660020026eacc040c044c044c044c044c044c044c034dd518080048c020dd500099ba548008cc028dd4802a5eb822c8030c024004c024c028004c024004c010dd5004c52689b2b200401",
+  "hash": "9c9666ddc12fc42f0151cd029c150c7d410ede9fe3885c248c8c26a0"
+}
+```
+
+Perhatikan bahwa `spend.spending_logics_delegated.else` dikompilasi menjadi hash yang sama dengan `spend.spending_logics_delegated.spend`. Kedua purpose menggunakan script terkompilasi yang sama. Validator multi-purpose dikompilasi menjadi satu hash, yang dapat dimanfaatkan oleh arsitektur tertentu.
+
+```json
+{
+  "title": "spend.spending_logics_delegated.else",
+  "redeemer": {
+    "schema": {}
+  },
+  "parameters": [
+    {
+      "title": "delegated_withdrawal_script_hash",
+      "schema": {
+        "$ref": "#/definitions/aiken~1crypto~1ScriptHash"
+      }
+    }
+  ],
+  "compiledCode": "58ac010100229800aba2aba1aba0aab9faab9eaab9dab9a9bae0024888888896600264646644b30013370e900118039baa001899914c004c03400a601a601c0052259800800c528456600266ebc00cc02cc03c00629462660040046020002805100d2444660020026eacc040c044c044c044c044c044c044c034dd518080048c020dd500099ba548008cc028dd4802a5eb822c8030c024004c024c028004c024004c010dd5004c52689b2b200401",
+  "hash": "9c9666ddc12fc42f0151cd029c150c7d410ede9fe3885c248c8c26a0"
+}
+```
+
+### `definitions`
+
+Bagian `definitions` berisi skema tipe yang dapat digunakan kembali, yang direferensikan oleh bagian `validators`.
+
+Contoh:
+
+```json
+{
+  "definitions": {
+    "Data": {
+      "title": "Data",
+      "description": "Any Plutus data."
+    },
+    "aiken/crypto/ScriptHash": {
+      "title": "ScriptHash",
+      "dataType": "bytes"
+    },
+    "cardano/assets/PolicyId": {
+      "title": "PolicyId",
+      "dataType": "bytes"
+    },
+    "withdraw/MyRedeemer": {
+      "title": "MyRedeemer",
+      "anyOf": [
+        {
+          "title": "ContinueCounting",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        },
+        {
+          "title": "StopCounting",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        }
+      ]
+    }
+  }
+}
+```
+
+## Mengotomatisasi Pembuatan Kode Offchain
+
+Menerjemahkan blueprint menjadi kode offchain secara manual memakan waktu. Ekstensi [`Cardano Bar VSCode Extension`](https://marketplace.visualstudio.com/items/?itemName=sidan-lab.cardano-bar-vscode) dapat mengotomatisasi proses ini. Buat kode offchain dari blueprint Anda dalam tiga langkah:
+
+1. Buat file TypeScript baru, misalnya `offchain.ts`.
+2. Buka command palette di VSCode (Ctrl+Shift+P atau Cmd+Shift+P).
+3. Ketik `Parse blueprint to Typescript - Mesh` dan pilih.
+![VSCode command palette](../../../../../public/lessons/06-interpreting-blueprint/vscode-command.png)
+
+4. Pilih file `plutus.json` yang berisi blueprint.
+![VSCode command palette](../../../../../public/lessons/06-interpreting-blueprint/select-blueprint.png)
+
+File `offchain.ts` yang dihasilkan mencakup semua fungsi yang dibutuhkan untuk berinteraksi dengan kode on-chain: spending, minting, dan querying kontrak. Lihat [dokumentasi Mesh SDK](https://meshjs.dev/apis/utilities/blueprints) untuk detailnya.
+
+## Kesimpulan
+
+Memahami Plutus blueprint sangat penting untuk menghubungkan validator on-chain dengan aplikasi off-chain. Alat seperti kelas `Blueprint` dari Mesh dan ekstensi Cardano Bar mengotomatisasi sebagian besar pekerjaan penerjemahan, sehingga Anda dapat fokus pada pengembangan aplikasi.
+
+## Source code
+
+Source code untuk pelajaran ini tersedia di [GitHub](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/06-interpreting-blueprint).

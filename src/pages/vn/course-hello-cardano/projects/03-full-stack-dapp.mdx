@@ -1,0 +1,65 @@
+---
+title: dApp Full-Stack Có Tài Trợ
+description: Xây dựng ứng dụng Cardano full-stack hoàn chỉnh với smart contract, đăng nhập mạng xã hội, tài trợ giao dịch, và tùy chọn tích hợp Hydra Layer 2.
+asIndexPage: true
+sidebarTitle: 3. dApp Full-Stack
+---
+
+import { Callout } from 'nextra/components'
+
+# Dự Án #03: dApp Full-Stack Có Tài Trợ (Đồ Án Tổng Kết)
+
+**Độ khó:** Chuyên gia | **Bài học:** 1–10
+
+Xây dựng một ứng dụng Cardano full-stack hoàn chỉnh kết hợp smart contract, giao diện web, đăng nhập mạng xã hội và tài trợ giao dịch.
+
+## Chọn Ứng Dụng Của Bạn
+
+Chọn một trong các ý tưởng sau (hoặc đề xuất ý tưởng của riêng bạn):
+- **Chợ NFT Có Tài Trợ**: Người dùng đúc và giao dịch NFT mà không cần giữ ADA
+- **Nền Tảng Quyên Góp**: Người dùng quyên góp cho các mục đích đã được xác minh với biên nhận trên chuỗi
+- **Hệ Thống Vé**: Nhà tổ chức sự kiện phát hành vé NFT, người tham dự nhận vé bằng đăng nhập mạng xã hội
+
+## Yêu Cầu
+
+Bất kể ứng dụng nào được chọn, dự án của bạn phải bao gồm:
+
+### 1. Smart Contract
+
+Ít nhất một validator Aiken được triển khai trên preprod với:
+- Bộ kiểm thử đầy đủ vượt qua `aiken check`
+- Blueprint được sử dụng để tạo mã off-chain
+
+### 2. Giao Diện NextJS
+
+Một ứng dụng web với:
+- Tích hợp Wallet-as-a-Service (đăng nhập mạng xã hội qua UTXOS hoặc nhà cung cấp tương tự)
+- Giao diện người dùng gọn gàng nơi người dùng có thể tương tác với smart contract của bạn
+- Phản hồi trạng thái giao dịch (đang chờ, đã gửi, đã xác nhận)
+
+### 3. Tài Trợ Giao Dịch
+
+Luồng tài trợ phía máy chủ nơi:
+- Người dùng không phải trả phí cho ít nhất một loại giao dịch
+- Khóa API và khóa ký được giữ phía máy chủ
+- Mô hình proxy Blockfrost từ Bài 10 được sử dụng
+
+### 4. Tích Hợp Hydra (Điểm Cộng)
+
+<Callout type="info" emoji="⭐">
+  Phần này là điểm cộng tùy chọn.
+</Callout>
+
+Để nhận điểm cộng, hãy thêm một thành phần Layer 2:
+- Sử dụng Hydra cho một tương tác tần suất cao (bỏ phiếu nhanh, nước đi trò chơi, hoặc xử lý hàng loạt)
+- Minh họa vòng đời mở, giao dịch, đóng
+- Hiển thị quyết toán cuối cùng trên Layer 1
+
+## Kỹ Năng Được Thể Hiện
+
+- Thành thạo toàn bộ Mesh SDK (Bài 1–2)
+- Phát triển và kiểm thử smart contract (Bài 3–5)
+- Mã off-chain dựa trên blueprint (Bài 6)
+- Các mẫu hợp đồng cấp ứng dụng (Bài 7–8)
+- Mở rộng quy mô Layer 2 với Hydra (Bài 9)
+- Dịch vụ Web3 và tiếp nhận người dùng (Bài 10)

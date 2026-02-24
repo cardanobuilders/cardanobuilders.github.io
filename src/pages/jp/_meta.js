@@ -1,4 +1,7 @@
 export default {
   index: {},
-  schedule: {},
+  "course-hello-cardano": {
+    title: "Hello Cardanoコース",
+    route: "/course-hello-cardano",
+  },
 };

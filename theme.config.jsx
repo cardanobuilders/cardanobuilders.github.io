@@ -74,5 +74,6 @@ export default {
     { locale: "en", name: "English" },
     { locale: "vn", name: "Tiếng Việt" },
     { locale: "jp", name: "日本語" },
+    { locale: "id", name: "Bahasa Indonesia" },
   ],
 };

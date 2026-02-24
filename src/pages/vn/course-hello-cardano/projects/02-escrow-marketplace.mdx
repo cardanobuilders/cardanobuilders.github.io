@@ -1,0 +1,59 @@
+---
+title: Ký Quỹ Ngang Hàng
+description: Xây dựng smart contract ký quỹ trên Cardano với ký đa bên, tranh chấp theo thời gian, và theo dõi trạng thái trên chuỗi sử dụng Aiken và Mesh SDK.
+asIndexPage: true
+sidebarTitle: 2. Ký Quỹ P2P
+---
+
+# Dự Án #02: Ký Quỹ Ngang Hàng Với Giải Quyết Tranh Chấp
+
+**Độ khó:** Nâng cao | **Bài học:** 1–8
+
+Xây dựng một smart contract ký quỹ nơi người mua khóa tiền, người bán giao hàng, và một trung gian hòa giải độc lập giải quyết tranh chấp.
+
+## Yêu Cầu
+
+### 1. Validator Ký Quỹ
+
+Viết một validator chi tiêu bằng Aiken với ba kết quả có thể:
+- **Giải phóng**: Người mua ký để giải phóng tiền cho người bán
+- **Hoàn tiền**: Người bán ký để hoàn tiền cho người mua
+- **Tranh chấp**: Nếu không bên nào hành động trong khoảng thời gian chờ có thể cấu hình, trung gian hòa giải có thể phân xử và gửi tiền cho một trong hai bên
+
+### 2. Xác Thực Chung Withdraw-Zero
+
+Sử dụng mô hình withdraw-zero (Bài 5) để tập trung các kiểm tra chung (chữ ký hợp lệ, logic thời gian chờ) trong một validator rút tiền, giảm kích thước script trên các nhánh giải phóng, hoàn tiền và tranh chấp.
+
+### 3. Theo Dõi Trạng Thái
+
+Sử dụng datum kiểu oracle (lấy cảm hứng từ Bài 8) để theo dõi trạng thái ký quỹ trên chuỗi:
+- `Created`: tiền đã khóa, chờ giao hàng
+- `Delivered`: người bán xác nhận đã giao hàng, chờ xác nhận từ người mua
+- `Resolved`: tiền đã được giải phóng cho bên thích hợp
+
+### 4. Kiểm Thử Hợp Đồng
+
+Viết các bài kiểm thử toàn diện bao gồm:
+- Giải phóng thành công bởi người mua sau khi giao hàng
+- Hoàn tiền thành công bởi người bán trước khi giao hàng
+- Trung gian hòa giải giải quyết khi hết thời gian chờ
+- Từ chối giải phóng khi không có chữ ký người mua
+- Từ chối tranh chấp trước khi hết thời gian chờ
+
+### 5. Mã Off-Chain
+
+Cung cấp các script chạy được cho toàn bộ vòng đời:
+- Tạo ký quỹ (khóa tiền với datum chỉ định người mua, người bán, trung gian hòa giải, thời gian chờ)
+- Đánh dấu đã giao hàng (người bán cập nhật trạng thái)
+- Giải phóng tiền (người mua xác nhận)
+- Giải quyết tranh chấp (trung gian hòa giải hành động sau khi hết thời gian chờ)
+
+## Kỹ Năng Được Thể Hiện
+
+- Xây dựng giao dịch và ký đa bên (Bài 1–2)
+- Validator Aiken với logic redeemer phức tạp (Bài 3)
+- Kiểm thử hợp đồng kỹ lưỡng (Bài 4)
+- Mô hình withdraw-zero cho xác thực chung (Bài 5)
+- Phân tích blueprint (Bài 6)
+- Logic mở khóa theo thời gian (Bài 7)
+- Quản lý trạng thái trên chuỗi với datum (Bài 8)

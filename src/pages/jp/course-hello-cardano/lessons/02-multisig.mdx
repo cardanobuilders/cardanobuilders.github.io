@@ -1,0 +1,323 @@
+---
+title: マルチシグトランザクション
+description: ネイティブスクリプト、MeshTxBuilder、NextJSフロントエンドを使って、Cardano上でトークンをミントするマルチシグトランザクションを構築します。
+asIndexPage: true
+sidebarTitle: 2. マルチシグTx
+---
+
+# レッスン #02: マルチシグトランザクション
+
+マルチシグ（複数署名）トランザクションとは、ブロックチェーンに送信する前に複数の当事者が署名する必要があるトランザクションです。マルチシグは、すべての必要な当事者が支出を承認しなければならない共同口座のように機能します。トランザクションには2人以上の署名者が必要で、それはウォレットまたはスクリプトのいずれかです。
+
+このレッスンでは以下を学びます:
+- トークンをミントするためのマルチシグトランザクションの構築
+- Cardanoブロックチェーンと対話するためのウェブインターフェースを持つNextJSアプリのセットアップ
+
+> ソースコード: [GitHub](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/02-multisig)
+
+## システムセットアップ
+
+### CIP30ウォレット拡張機能のダウンロード
+
+CIP30規格をサポートするブラウザウォレット拡張機能が必要です。[Cardanoデベロッパーショーケース](https://developers.cardano.org/showcase/?tags=wallet)から選んでインストールしてください。
+
+インストール後、前回のレッスンで作成したシードフレーズを使ってウォレットを復元します。
+
+### NextJSとMeshのセットアップ
+
+新しいNextJSアプリケーションを作成します:
+
+```bash
+npx create-next-app@latest --typescript mesh-multisig
+```
+
+プロンプトに従います:
+
+```bash
+Need to install the following packages:
+Ok to proceed? (y)
+
+✔ Would you like to use ESLint? … Yes
+✔ Would you like to use Tailwind CSS? … Yes
+✔ Would you like your code inside a `src/` directory? … Yes
+✔ Would you like to use App Router? … No
+✔ Would you like to use Turbopack for next dev? … No
+✔ Would you like to customize the import alias (@/* by default)? … No
+```
+
+新しく作成されたフォルダに移動します:
+
+```bash
+cd mesh-multisig
+```
+
+最新版のMeshをインストールします:
+
+```bash
+npm install @meshsdk/core @meshsdk/react
+```
+
+### MeshProviderの追加
+
+アプリケーションを`MeshProvider`でラップして、Mesh Reactコンポーネントを有効にします。`src/app/layout.tsx`を開き、以下を追加します:
+
+```ts
+import "@/styles/globals.css";
+import type { AppProps } from "next/app";
+import "@meshsdk/react/styles.css";
+import { MeshProvider } from "@meshsdk/react";
+
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <MeshProvider>
+      <Component {...pageProps} />
+    </MeshProvider>
+  );
+}
+```
+
+### CardanoWalletコンポーネントの追加
+
+ブロックチェーンとの対話のためにウォレットコンポーネントを追加します。`src/pages/index.tsx`の内容を以下で置き換えます:
+
+```ts
+import { CardanoWallet, useWallet } from "@meshsdk/react";
+
+export default function Home() {
+  const { wallet, connected } = useWallet();
+  return (
+    <div>
+      <CardanoWallet isDark={true} />
+    </div>
+  );
+}
+```
+
+開発サーバーを起動します:
+
+```bash
+npm run dev
+```
+
+[http://localhost:3000](http://localhost:3000/)にアクセスしてアプリケーションを確認してください。サーバーを停止するには**CTRL+C**を押します。
+
+「Connect Wallet」コンポーネントが表示されるはずです。ウォレットへの接続を試してみてください。
+
+## ミントスクリプト
+
+このセクションでは、マルチシグトークンミント用のミントスクリプトの作成手順を説明します。
+
+### ミントスクリプトの定義
+
+ミントスクリプトの定数を設定します:
+
+```ts
+const provider = new BlockfrostProvider("YOUR_KEY_HERE");
+
+const demoAssetMetadata = {
+  name: "Mesh Token",
+  image: "ipfs://QmRzicpReutwCkM6aotuKjErFCUD213DpwPq6ByuzMJaua",
+  mediaType: "image/jpg",
+  description: "This NFT was minted by Mesh (https://meshjs.dev/).",
+};
+
+const mintingWallet = ["your", "mnemonic", "...", "here"];
+```
+
+- `YOUR_KEY_HERE`をあなたのBlockfrost APIキーに置き換えてください。
+- `demoAssetMetadata`にアセットメタデータを定義します。
+- ミントウォレットのmnemonicを使用します。
+
+### ミント用アプリケーションウォレットの作成
+
+ミントトランザクションを構築する関数を作成します:
+
+```ts
+async function buildMintTx(inputs: UTxO[], changeAddress: string) {
+  const wallet = new MeshWallet({
+    networkId: 0,
+    key: {
+      type: "mnemonic",
+      words: mintingWallet,
+    },
+  });
+
+  const { pubKeyHash: keyHash } = deserializeAddress(
+    await wallet.getChangeAddress()
+  );
+}
+```
+
+- `inputs`: ミント手数料を支払うウォレットからのUTxOです。
+- mnemonicでウォレットを初期化します。
+- ミントスクリプト用に`pubKeyHash`を導出します。
+
+### ネイティブスクリプトの作成
+
+ネイティブスクリプトを定義します:
+
+```ts
+const nativeScript: NativeScript = {
+  type: "all",
+  scripts: [
+    {
+      type: "before",
+      slot: "99999999",
+    },
+    {
+      type: "sig",
+      keyHash: keyHash,
+    },
+  ],
+};
+const forgingScript = ForgeScript.fromNativeScript(nativeScript);
+```
+
+- `nativeScript`: スクリプトのパラメータです。
+- `ForgeScript.fromNativeScript`: 鍛造スクリプトを作成します。
+
+### アセットメタデータの定義
+
+アセットメタデータを設定します:
+
+```ts
+const policyId = resolveScriptHash(forgingScript);
+const tokenName = "MeshToken";
+const tokenNameHex = stringToHex(tokenName);
+const metadata = { [policyId]: { [tokenName]: { ...demoAssetMetadata } } };
+```
+
+- `policyId`: 鍛造スクリプトから導出されます。
+- `tokenName`: トークンの名前です。
+- `metadata`: アセットメタデータです。
+
+### トランザクションの作成
+
+ミントトランザクションを構築します:
+
+```ts
+const txBuilder = new MeshTxBuilder({
+  fetcher: provider,
+  verbose: true,
+});
+
+const unsignedTx = await txBuilder
+  .mint("1", policyId, tokenNameHex)
+  .mintingScript(forgingScript)
+  .metadataValue(721, metadata)
+  .changeAddress(changeAddress)
+  .invalidHereafter(99999999)
+  .requiredSignerHash(keyHash)
+  .selectUtxosFrom(inputs)
+  .complete();
+```
+
+- `mint`: トークンの詳細を追加します。
+- `mintingScript`: ミントスクリプトを添付します。
+- `metadataValue`: アセットメタデータを追加します。
+- `changeAddress`: お釣りアドレスを指定します。
+- `invalidHereafter`: トランザクションの有効期限を設定します。
+- `selectUtxosFrom`: 手数料用のUTxOを使用します。
+- `requiredSignerHash`: ミンターウォレットの公開鍵hashが必要であることを宣言します。
+- `complete`: トランザクションを確定します。
+
+### トランザクションへの署名
+
+ミントウォレットでトランザクションに署名します:
+
+```ts
+const signedTx = await wallet.signTx(unsignedTx, true);
+```
+
+### ソースコード
+
+ミントトランザクション構築の完全なコードは以下の通りです:
+
+```ts
+async function buildMintTx(inputs: UTxO[], changeAddress: string) {
+  // minting wallet
+  const wallet = new MeshWallet({
+    networkId: 0,
+    key: {
+      type: "mnemonic",
+      words: mintingWallet,
+    },
+  });
+
+  const { pubKeyHash: keyHash } = deserializeAddress(
+    await wallet.getChangeAddress()
+  );
+
+  // create minting script
+  const nativeScript: NativeScript = {
+    type: "all",
+    scripts: [
+      {
+        type: "before",
+        slot: "99999999",
+      },
+      {
+        type: "sig",
+        keyHash: keyHash,
+      },
+    ],
+  };
+  const forgingScript = ForgeScript.fromNativeScript(nativeScript);
+
+  // create metadata
+  const policyId = resolveScriptHash(forgingScript);
+  const tokenName = "MeshToken";
+  const tokenNameHex = stringToHex(tokenName);
+  const metadata = { [policyId]: { [tokenName]: { ...demoAssetMetadata } } };
+
+  // create transaction
+  const txBuilder = new MeshTxBuilder({
+    fetcher: provider,
+    verbose: true,
+  });
+
+  const unsignedTx = await txBuilder
+    .mint("1", policyId, tokenNameHex)
+    .mintingScript(forgingScript)
+    .metadataValue(721, metadata)
+    .changeAddress(changeAddress)
+    .invalidHereafter(99999999)
+    .requiredSignerHash(keyHash)
+    .selectUtxosFrom(inputs)
+    .complete();
+
+  const signedTx = await wallet.signTx(unsignedTx, true);
+  return signedTx;
+}
+```
+
+## トランザクションの実行
+
+ミントトランザクションの構築が完了したら、フロントエンドから実行します:
+
+```ts
+async function mint() {
+  if (connected) {
+    const inputs = await wallet.getUtxos();
+    const changeAddress = await wallet.getChangeAddress();
+
+    const tx = await buildMintTx(inputs, changeAddress);
+    const signedTx = await wallet.signTx(tx, true);
+
+    const txHash = await wallet.submitTx(signedTx);
+    console.log("Transaction hash:", txHash);
+  }
+}
+```
+
+- ウォレットの接続状態を確認します。
+- UTxOとお釣りアドレスを取得します。
+- トランザクションを構築、署名、送信します。
+
+## ソースコード
+
+このレッスンのソースコードは[GitHub](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/02-multisig)で公開されています。
+
+## チャレンジ
+
+3人中2人の署名者の承認が必要なマルチシグウォレットを作成してください。2人の署名者でトランザクションを構築・署名し、送信して成功を確認しましょう。

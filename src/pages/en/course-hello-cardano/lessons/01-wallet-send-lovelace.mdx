@@ -1,17 +1,19 @@
 ---
 title: Hello World
-description: Install Mesh SDK and learn how to send assets using the Mesh wallet.
+description: Set up the Mesh SDK, create a Cardano wallet with MeshWallet, and send your first lovelace transaction using MeshTxBuilder.
 asIndexPage: true
 sidebarTitle: 1. Hello World
 ---
 
 # Lesson #01: Hello World
 
-Welcome to the first lesson of the Cardano Application Development Course! In this session, you'll set up the [Mesh SDK](https://meshjs.dev/) and learn how to create a wallet using `MeshWallet` and send assets using `MeshTxBuilder`.
+This lesson covers the fundamentals of Cardano application development: installing the [Mesh SDK](https://meshjs.dev/), creating a wallet with `MeshWallet`, and sending lovelace using `MeshTxBuilder`.
+
+> Source code: [GitHub](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/01-wallet-send-lovelace)
 
 ## System setup
 
-Before we begin, let's prepare our system for development. We will be using Node.js v24+ in this course. We recommend [nvm to manage your node versions](https://github.com/nvm-sh/nvm).
+This course requires Node.js v24+. We recommend using [nvm](https://github.com/nvm-sh/nvm) to manage your Node versions.
 
 ### Create a package.json file
 
@@ -50,13 +52,13 @@ Here's how your `package.json` file should look after installing the package:
 
 ## Create a wallet
 
-We will use [`MeshWallet`](https://meshjs.dev/apis/wallets/meshwallet). This class provides methods to create a new wallet, generate mnemonic phrases, and get the wallet address.
+[`MeshWallet`](https://meshjs.dev/apis/wallets/meshwallet) provides methods to create wallets, generate mnemonic phrases, and retrieve wallet addresses.
 
 ### Generate mnemonic phrases
 
-To create a new wallet, we need to generate a mnemonic phrase. A mnemonic phrase is a set of words that can be used to recover your wallet. It is important to keep your mnemonic phrase safe and secure, as it can be used to access your funds.
+A mnemonic phrase is a set of words used to recover your wallet. Keep your mnemonic phrase safe and secure; anyone with access to it can control your funds.
 
-To create a new wallet mnemonic, do the following:
+Generate a new mnemonic:
 
 ```ts
 import { MeshWallet } from "@meshsdk/core";
@@ -70,7 +72,7 @@ console.log("Your mnemonic phrases are:", mnemonic);
 
 ### Initialize the wallet and get the wallet address
 
-Now that we have generated a mnemonic phrase, we can initialize the wallet with it. The `MeshWallet` class provides a method to create a new wallet using the mnemonic phrase.
+With a mnemonic phrase generated, initialize the wallet:
 
 ```ts
 // Initialize the wallet with a mnemonic key
@@ -93,7 +95,7 @@ console.log("Your wallet address is:", address);
 
 ### Run the code
 
-Here is the source code. Create a new file `mnemonic.ts` and copy the code into it:
+Create a new file `mnemonic.ts` with the following code:
 
 ```ts
 import { MeshWallet } from "@meshsdk/core";
@@ -135,7 +137,7 @@ Run the script:
 ```bash
 npm run mnemonic
 ```
-This will generate a new mnemonic phrase and wallet address for you. The output will look something like this:
+This generates a new mnemonic phrase and wallet address. The output looks similar to:
 
 ```bash
 > mnemonic
@@ -156,21 +158,19 @@ Your wallet address is: addr_test1qptwuv6dl863u3k93mjrg0hgs0ahl08lfhsudxrwshcsx5
 
 ## Send lovelace
 
-Now that we have a wallet and some lovelace, let's learn how to send lovelace using the Mesh SDK. We will use the `MeshTxBuilder` class to create a transaction and send it to the network.
+With a funded wallet, you can send lovelace using the `MeshTxBuilder` class to build and submit transactions to the network.
 
 ### Get lovelace from faucet
 
-To get some lovelace for testing, you can use the [Cardano Preprod Testnet Faucet](https://docs.cardano.org/cardano-testnets/tools/faucet). Paste your wallet address and click on the "Request funds" button. You should receive some lovelace in your wallet shortly.
+Use the [Cardano Preprod Testnet Faucet](https://docs.cardano.org/cardano-testnets/tools/faucet) to get test lovelace. Paste your wallet address, click "Request funds," and you will receive lovelace shortly.
 
 ### Get Blockfrost API key
 
-In order to create transactions, we need to use APIs to get UTXOs from the network. For this, we will use Blockfrost to get UTXOs and submit transactions. Sign up for a free account and get your API key [here](https://blockfrost.io/).
-
-You should get the preprod API key, which starts with `preprod`. You can find the API key in the "Projects" section of your Blockfrost account.
+Transaction building requires fetching UTXOs from the network. Sign up for a free [Blockfrost](https://blockfrost.io/) account and get a preprod API key (it starts with `preprod`). You can find the key in the "Projects" section of your Blockfrost dashboard.
 
 ### Get wallet information
 
-Now, let's get the wallet information using the `MeshWallet` class.
+Retrieve the wallet's UTXOs and change address:
 
 ```ts
 // Get wallet data needed for the transaction
@@ -183,7 +183,7 @@ const changeAddress = await wallet.getChangeAddress();
 
 ### Create a transaction to send lovelace
 
-Now, we will create a transaction to send lovelace using the [`MeshTxBuilder`](https://meshjs.dev/apis/txbuilder) class.
+Build the transaction using [`MeshTxBuilder`](https://meshjs.dev/apis/txbuilder):
 
 ```ts
 // Create the transaction
@@ -209,7 +209,7 @@ const unsignedTx = await txBuilder
 
 ### Sign and submit the transaction
 
-Now that we have created the transaction, we need to sign it and submit it to the network.
+Sign and submit the transaction to the network:
 
 ```ts
 const signedTx = await wallet.signTx(unsignedTx);
@@ -222,7 +222,7 @@ console.log("Transaction hash:", txHash);
 
 ### Run the code
 
-Here is the source code. Create a new file `send-lovelace.ts` and copy the code into it:
+Create a new file `send-lovelace.ts` with the complete code:
 
 ```ts
 import { BlockfrostProvider, MeshTxBuilder, MeshWallet } from "@meshsdk/core";
@@ -286,7 +286,7 @@ Run the script:
 npm run send-lovelace
 ```
 
-This will create a transaction to send lovelace to the recipient address and submit it to the network. The output will look something like this:
+This builds, signs, and submits a lovelace transaction. The output looks similar to:
 
 ```bash
 > send-lovelace
@@ -297,9 +297,7 @@ txBodyJson - after coin selection {"inputs":[{"type":"PubKey","txIn":{"txHash":"
 Transaction hash: 62a825c607e4ca5766325c2fccd7ee98313ff81b7e8a4af67eac421b0f0866ff
 ```
 
-You should see the transaction hash in the output.
-
-Note, in the `MeshTxBuilder` class, we have set `verbose: true`, which will print the transaction body before and after coin selection. This is useful for debugging and understanding how the transaction is built.
+The transaction hash confirms your transaction was submitted. Setting `verbose: true` in `MeshTxBuilder` prints the transaction body before and after coin selection, which is useful for debugging.
 
 ## Source code
 

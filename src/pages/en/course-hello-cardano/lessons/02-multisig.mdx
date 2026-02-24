@@ -1,29 +1,31 @@
 ---
 title: Multi-signature Transactions
-description: Learn to build multi-signature transactions on Cardano.
+description: Build multi-signature transactions on Cardano to mint tokens using native scripts, MeshTxBuilder, and a NextJS frontend.
 asIndexPage: true
 sidebarTitle: 2. Multisig Tx
 ---
 
 # Lesson #02: Multi-signature Transactions
 
-A multi-signature (multi-sig) transaction requires more than one user to sign a transaction before it is broadcast on the blockchain. Think of it like a joint savings account where both parties must approve spending. Multi-sig transactions can include two or more required signers, which can be wallets or scripts.
+A multi-signature (multi-sig) transaction requires multiple parties to sign before it can be submitted to the blockchain. Multi-sig works like a joint account where all required parties must approve spending. Transactions can require two or more signers, which can be wallets or scripts.
 
-In this lesson, you'll learn how to:
-- Build multi-signature transactions to mint a token.
-- Set up a NextJS app with a simple web interface to interact with the Cardano blockchain.
+In this lesson, you will:
+- Build multi-signature transactions to mint a token
+- Set up a NextJS app with a web interface to interact with the Cardano blockchain
+
+> Source code: [GitHub](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-hello-cardano/02-multisig)
 
 ## System setup
 
 ### Download CIP30 Wallet Extension
 
-To interact with the blockchain, you'll need a wallet extension that supports the CIP30 standard. Choose and download one [here](https://developers.cardano.org/showcase/?tags=wallet).
+You need a browser wallet extension that supports the CIP30 standard. Choose and install one from the [Cardano developer showcase](https://developers.cardano.org/showcase/?tags=wallet).
 
-After downloading the wallet, restore it using the seed phrase you created in the previous lesson.
+After installing, restore the wallet using the seed phrase you created in the previous lesson.
 
 ### Set Up NextJS and Mesh
 
-Open your terminal and run the following command to create a new NextJS application:
+Create a new NextJS application:
 
 ```bash
 npx create-next-app@latest --typescript mesh-multisig
@@ -57,7 +59,7 @@ npm install @meshsdk/core @meshsdk/react
 
 ### Add MeshProvider
 
-To use Mesh React, wrap your application with the `MeshProvider` component. Open the `src/app/layout.tsx` file and add:
+Wrap your application with `MeshProvider` to enable Mesh React components. Open `src/app/layout.tsx` and add:
 
 ```ts
 import "@/styles/globals.css";
@@ -76,7 +78,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
 ### Add CardanoWallet Component
 
-Add a wallet React component to connect to the wallet and interact with the blockchain. Open the `src/pages/index.tsx` file, delete the existing code, and replace it with:
+Add a wallet component for blockchain interaction. Replace the contents of `src/pages/index.tsx` with:
 
 ```ts
 import { CardanoWallet, useWallet } from "@meshsdk/react";
@@ -103,7 +105,7 @@ You should see a "Connect Wallet" component. Try connecting to your wallet.
 
 ## Minting Script
 
-In this section, you'll create a minting script to mint a token using a multi-signature transaction.
+This section walks through creating a minting script for a multi-signature token mint.
 
 ### Define the Minting Script
 
@@ -291,7 +293,7 @@ async function buildMintTx(inputs: UTxO[], changeAddress: string) {
 
 ## Execute the transaction
 
-Now that we have the minting transaction, we can execute it.
+With the minting transaction built, execute it from the frontend:
 
 ```ts
 async function mint() {
