@@ -1,0 +1,72 @@
+---
+title: Hello Cardano
+description: Aikenとmesh SDKを使用して、スマートコントラクトからフロントエンドアプリケーションまで、Cardano上でのアプリケーション構築をエンドツーエンドで学びます。
+asIndexPage: true
+sidebarTitle: はじめに
+---
+
+# Hello Cardano
+
+このコースでは、Cardano上でのフルスタックアプリケーション構築をゼロから学びます。10の実践的なレッスンを通じて、[Aiken](https://aiken-lang.org/)でスマートコントラクトを記述し、[Mesh SDK](https://meshjs.dev/)でトランザクションを構築し、Cardanoブロックチェーン上で動作するアプリケーションをデプロイします。
+
+このコースを終える頃には、ウォレット、トランザクション、スマートコントラクト開発、テスト、レイヤー2スケーリングの実践的な経験を身につけることができます。
+
+## 前提条件
+
+- **TypeScript**：TypeScriptの基本的な知識が必要です。コースはCardanoの概念に焦点を当てており、言語の基礎は扱いません。
+- **Node.js v24+**：レッスンのコードを実行するために必要です。Nodeバージョンの管理には[nvm](https://github.com/nvm-sh/nvm)の使用をお勧めします。
+- **ブロックチェーン経験不要**：各レッスンは前のレッスンの上に構築され、基礎から始まります。
+
+## コース概要
+
+### レッスン1：Hello World
+Mesh SDKをセットアップし、`MeshWallet`でウォレットを作成し、`MeshTxBuilder`を使用して最初のlovelaceトランザクションを送信します。
+[ソースコード](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/01-wallet-send-lovelace)
+
+### レッスン2：マルチシグトランザクション
+ネイティブスクリプトを使用してトークンをミントするマルチシグトランザクションを構築し、CardanoブロックチェーンとやりとりするNextJSフロントエンドをセットアップします。
+[ソースコード](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/02-multisig)
+
+### レッスン3：Aikenコントラクト
+ミンティング、スペンディング、ウィズドローアルバリデーターを含むAikenスマートコントラクトの基礎をトランザクションコンテキストとともに学びます。
+[ソースコード](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/03-aiken-contracts)
+
+### レッスン4：コントラクトテスト
+モックトランザクション、mocktailライブラリ、`aiken check`による動的な失敗ケース生成を使用してAikenスマートコントラクトをテストします。
+[ソースコード](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/04-contract-testing)
+
+### レッスン5：冗長なバリデーションの回避
+withdraw-zeroパターンを使用してウィズドローアルスクリプトに共通のバリデーションロジックを集約し、オンチェーンコストを削減します。
+[ソースコード](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/05-avoid-redundant-validation)
+
+### レッスン6：Blueprintの解釈
+AikenコントラクトからCIP-57 Plutusブループリントを解釈し、Mesh SDKを使用してTypeScriptオフチェーンコードを生成します。
+[ソースコード](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/06-interpreting-blueprint)
+
+### レッスン7：Vestingコントラクト
+資金をロックし、ロックアップ期間後に受益者が引き出せるvestingスマートコントラクトを構築します。
+[ソースコード](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/07-vesting)
+
+### レッスン8：Plutus NFTコントラクト
+複数のバリデーター、オラクルトークン、非代替性のための自動インクリメントインデックスを持つPlutus NFTコントラクトを作成します。
+
+### レッスン9：エンドツーエンドHydra
+Cardanoのレイヤー2スケーリングソリューションであるHydraを、2人の参加者間のステートチャネルに関するエンドツーエンドチュートリアルを通じて探求します。
+
+### レッスン10：Web3サービス
+ウォレット・アズ・ア・サービスとトランザクションスポンサーシップを統合し、ユーザーをCardanoアプリケーションにシームレスにオンボーディングします。
+
+## ツールとリソース
+
+- **[Aiken](https://aiken-lang.org/)**：効率的なCardanoスマートコントラクトを記述するための言語。
+- **[Mesh SDK](https://meshjs.dev/)**：トランザクションの構築とCardanoブロックチェーンとの対話のためのTypeScript SDK。
+- **[Blockfrost](https://blockfrost.io/)**：CardanoネットワークをクエリするためのブロックチェーンAPIプロバイダー。
+- **[Cardano Preprodテストネットフォーセット](https://docs.cardano.org/cardano-testnets/tools/faucet)**：開発用のテストlovelaceを取得できます。
+
+## ソースコード
+
+このコースのすべてのソースコードは[GitHub](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano)で利用可能です。
+
+## 始めましょう
+
+[レッスン1：Hello World](/jp/course-cardano/lessons/01-wallet-send-lovelace)から始めて、環境をセットアップし、最初のトランザクションを送信しましょう。

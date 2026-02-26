@@ -1,7 +1,11 @@
 export default {
   index: {},
-  "course-hello-cardano": {
+  "course-blockchain": {
+    title: "ブロックチェーン理論コース",
+    route: "/course-blockchain",
+  },
+  "course-cardano": {
     title: "Hello Cardanoコース",
-    route: "/course-hello-cardano",
+    route: "/course-cardano",
   },
 };

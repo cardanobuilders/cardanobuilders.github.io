@@ -1,0 +1,17 @@
+export default {
+  "01-what-is-blockchain": {},
+  "02-cryptographic-primitives": {},
+  "03-consensus-mechanisms": {},
+  "04-utxo-model": {},
+  "05-wallets-keys-addresses": {},
+  "06-transactions": {},
+  "07-smart-contracts": {},
+  "08-smart-contract-languages": {},
+  "09-datum-redeemer-context": {},
+  "10-native-tokens": {},
+  "11-defi-concepts": {},
+  "12-stake-pools-delegation": {},
+  "13-developer-infrastructure": {},
+  "14-blockchain-security": {},
+  "15-cardano-governance": {},
+};

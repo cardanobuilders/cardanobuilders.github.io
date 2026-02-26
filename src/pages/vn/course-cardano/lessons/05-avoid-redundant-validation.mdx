@@ -1,0 +1,280 @@
+---
+title: Tránh xác thực trùng lặp
+description: Giảm chi phí on-chain bằng cách tập trung logic xác thực chung vào withdrawal script sử dụng thủ thuật withdraw-zero trên Cardano.
+asIndexPage: true
+sidebarTitle: 5. Tránh xác thực trùng lặp
+---
+
+# Bài #05: Tránh xác thực trùng lặp
+
+Một câu hỏi phổ biến từ các bài học trước: tại sao sử dụng withdrawal script cho minting và cập nhật trạng thái thay vì xác thực trực tiếp trong spending validator? Mỗi UTXO được chi tiêu từ spending validator đều kích hoạt xác thực, vậy tại sao không đặt logic ở đó?
+
+> Mã nguồn: [GitHub](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/05-avoid-redundant-validation)
+
+## Giao dịch với nhiều xác thực script
+
+Xem xét một giao dịch phức tạp liên quan đến nhiều xác thực script: minting token, chi tiêu nhiều script UTXO, và rút tiền. Mỗi hành động có thể yêu cầu bộ kiểm tra riêng.
+
+```mermaid
+graph TB
+    %% Layout subgraph for labels at top with horizontal alignment
+    subgraph Checks[" Xác thực chung "]
+        direction LR
+        C1["C1: Kiểm tra chữ ký chủ sở hữu"] ~~~ C2["C2: Kiểm tra chưa hết hạn"] ~~~ C3["C3: Các kiểm tra chung khác"]
+    end
+
+    %% Remove the connecting lines between checks
+    linkStyle 0 stroke-width:0px
+    linkStyle 1 stroke-width:0px
+
+    %% Connect checks to components with dotted lines
+    Checks -.-> A1
+    Checks -.-> A2
+    Checks -.-> A3
+    Checks -.-> M
+    Checks -.-> W
+
+    %% Inputs on left
+    A1[Đầu vào Script 1] --> TX
+    A2[Đầu vào Script 2] --> TX
+    A3[Đầu vào Script 3] --> TX
+
+    %% Center transaction
+    TX((Giao dịch))
+
+    %% Mint on top
+    M[Đúc Token] --> TX
+
+    %% Withdraw at bottom
+    W[Withdrawal Script] --> TX
+
+    %% Clear styling with bright colors and black text
+    style TX fill:#FFA07A,stroke:#333,stroke-width:2px,color:#000
+    style M fill:#87CEEB,stroke:#333,stroke-width:2px,color:#000
+    style W fill:#DDA0DD,stroke:#333,stroke-width:2px,color:#000
+    style A1 fill:#E0E0E0,stroke:#333,stroke-width:2px,color:#000
+    style A2 fill:#E0E0E0,stroke:#333,stroke-width:2px,color:#000
+    style A3 fill:#E0E0E0,stroke:#333,stroke-width:2px,color:#000
+    style C1 fill:#FFFFFF,stroke:#333,stroke-width:1px,color:#000
+    style C2 fill:#FFFFFF,stroke:#333,stroke-width:1px,color:#000
+    style C3 fill:#FFFFFF,stroke:#333,stroke-width:1px,color:#000
+
+    %% Positioning
+    classDef default text-align:center
+```
+
+Áp dụng các kiểm tra chung trong mọi script gây ra xác thực trùng lặp: cùng một logic được thực thi nhiều lần, làm tăng chi phí giao dịch và kích thước script.
+
+## Làm thế nào để tối ưu hơn?
+
+![Centralized Validation via Withdrawal Script](/course-cardano/cardano05-01.png)
+
+Tập trung các kiểm tra chung vào một script duy nhất thực thi một lần. Tất cả các script khác ủy quyền cho nó, loại bỏ logic trùng lặp trong khi vẫn bảo toàn tất cả các xác thực cần thiết.
+
+```mermaid
+graph TB
+    %% Layout subgraph for labels at top with horizontal alignment
+    subgraph Checks[" Xác thực chung "]
+        direction LR
+        C1["C1: Kiểm tra chữ ký chủ sở hữu"] ~~~ C2["C2: Kiểm tra chưa hết hạn"] ~~~ C3["C3: Các kiểm tra chung khác"]
+    end
+
+    %% Add spacing
+    WithdrawalCheck[" Kiểm tra Withdrawal Script đang xác thực "]
+
+    %% Organize layout with invisible connections for spacing
+    Checks ~~~ WithdrawalCheck
+
+    %% Connect validation flows
+    Checks -.-> W
+    WithdrawalCheck -.-> A1
+    WithdrawalCheck -.-> A2
+    WithdrawalCheck -.-> A3
+    WithdrawalCheck -.-> M
+
+    %% Inputs on left with consistent arrows
+    A1[Đầu vào Script 1] --> TX
+    A2[Đầu vào Script 2] --> TX
+    A3[Đầu vào Script 3] --> TX
+
+    %% Transaction and other components
+    TX((Giao dịch))
+    M[Đúc Token] --> TX
+    W[Withdrawal Script] --> TX
+
+    %% Styling
+    style TX fill:#FFA07A,stroke:#333,stroke-width:2px,color:#000
+    style M fill:#87CEEB,stroke:#333,stroke-width:2px,color:#000
+    style W fill:#DDA0DD,stroke:#333,stroke-width:2px,color:#000
+    style A1 fill:#E0E0E0,stroke:#333,stroke-width:2px,color:#000
+    style A2 fill:#E0E0E0,stroke:#333,stroke-width:2px,color:#000
+    style A3 fill:#E0E0E0,stroke:#333,stroke-width:2px,color:#000
+    style C1 fill:#FFFFFF,stroke:#333,stroke-width:1px,color:#000
+    style C2 fill:#FFFFFF,stroke:#333,stroke-width:1px,color:#000
+    style C3 fill:#FFFFFF,stroke:#333,stroke-width:1px,color:#000
+    style WithdrawalCheck fill:#FFFFFF,stroke:#333,stroke-width:1px,color:#000
+
+    %% Remove visible connections between check boxes
+    linkStyle 0 stroke-width:0px
+    linkStyle 1 stroke-width:0px
+    linkStyle 2 stroke-width:0px
+```
+
+`WithdrawalCheck` script thực hiện các xác thực chung một lần, kiểm tra các điều kiện cho tất cả các script khác trong giao dịch.
+
+## Ví dụ: Tiếp nối từ Bài 4
+
+Giả sử withdrawal script của Bài 4 chứa tất cả logic xác thực chung. Thay vì lặp lại các kiểm tra đó trong spending và minting validator, hãy ủy quyền cho withdrawal script:
+
+### Spending
+
+```rs
+use aiken/crypto.{ScriptHash}
+use cardano/transaction.{OutputReference, Transaction}
+use cocktail.{withdrawal_script_validated}
+
+validator spending_logics_delegated(
+  delegated_withdrawal_script_hash: ScriptHash,
+) {
+  spend(
+    _datum_opt: Option<Data>,
+    _redeemer: Data,
+    _input: OutputReference,
+    tx: Transaction,
+  ) {
+    withdrawal_script_validated(
+      tx.withdrawals,
+      delegated_withdrawal_script_hash,
+    )
+  }
+
+  else(_) {
+    fail @"unsupported purpose"
+  }
+}
+```
+
+### Minting
+
+```rs
+use aiken/crypto.{ScriptHash}
+use cardano/assets.{PolicyId}
+use cardano/transaction.{Transaction}
+use cocktail.{withdrawal_script_validated}
+
+validator minting_logics_delegated(
+  delegated_withdrawal_script_hash: ScriptHash,
+) {
+  mint(_redeemer: Data, _policy_id: PolicyId, tx: Transaction) {
+    withdrawal_script_validated(
+      tx.withdrawals,
+      delegated_withdrawal_script_hash,
+    )
+  }
+
+  else(_) {
+    fail @"unsupported purpose"
+  }
+}
+```
+
+## Tại sao ủy quyền cho withdrawal script?
+
+Ủy quyền xác thực cho withdrawal script là một mẫu thiết kế phổ biến trong hợp đồng thông minh Cardano. Mặc dù bạn có thể ủy quyền cho spending hoặc minting validator, withdrawal script có một lợi thế riêng biệt.
+
+### Kích hoạt sạch
+
+Xác thực spending được kích hoạt khi một UTXO được chi tiêu, và xác thực minting được kích hoạt khi một token được đúc. Cả hai đều yêu cầu một hành động on-chain thực sự. Ngược lại, withdrawal script có thể được kích hoạt bằng cách rút 0 lovelace ([`thủ thuật withdraw 0`](https://aiken-lang.org/fundamentals/common-design-patterns#forwarding-validation--other-withdrawal-tricks)). Điều này kích hoạt xác thực một cách sạch sẽ mà không ảnh hưởng đến logic hoặc trạng thái của giao dịch.
+
+## Giải thích đơn giản
+
+### Tại sao nên tránh xác thực trùng lặp?
+Khi nhiều script tham gia vào một giao dịch, lặp lại cùng các kiểm tra trong mỗi script lãng phí ngân sách thực thi và tăng phí. Tập trung các kiểm tra chung vào một script chỉ chạy chúng một lần.
+
+### Cách ủy quyền hoạt động
+Withdrawal script đóng vai trò là validator trung tâm:
+
+- **Spending Validator**: Kiểm tra rằng withdrawal script có mặt trong giao dịch
+- **Minting Validator**: Cũng kiểm tra withdrawal script
+- **Withdrawal Script**: Chạy tất cả logic xác thực chung một lần
+
+### Thủ thuật Withdraw-Zero
+Withdrawal script được kích hoạt thông qua `thủ thuật withdraw 0`: rút 0 lovelace kích hoạt xác thực mà không ảnh hưởng đến trạng thái giao dịch. Phương pháp này được áp dụng rộng rãi nhờ tính đơn giản.
+
+### Lợi ích chính
+- **Hiệu quả**: Các kiểm tra chung chỉ thực thi một lần thay vì mỗi script một lần
+- **Phí thấp hơn**: Giảm ngân sách thực thi đồng nghĩa với chi phí giao dịch thấp hơn
+- **Dễ bảo trì**: Logic xác thực nằm ở một nơi duy nhất
+
+## Hướng Dẫn Mã Nguồn
+
+Phần này hướng dẫn chi tiết các file trong dự án để bạn thấy cách mẫu ủy quyền được tổ chức trong thực tế. Nếu bạn đến từ nền tảng Web2, hãy nghĩ đây là việc xem xét kiến trúc middleware của một dịch vụ backend.
+
+### Cấu trúc dự án
+
+```
+05-avoid-redundant-validation/
+├── validators/
+│   ├── withdraw.ak    # Middleware chung - tất cả xác thực chung nằm ở đây
+│   ├── spend.ak       # Spending validator - ủy quyền cho withdraw.ak
+│   └── mint.ak        # Minting validator - ủy quyền cho withdraw.ak
+├── aiken.toml         # Manifest dự án (giống package.json)
+├── aiken.lock         # Lockfile dependency (giống bun.lockb)
+└── plutus.json        # Sản phẩm đã biên dịch (giống thư mục dist/)
+```
+
+### Mô hình tư duy Web2
+
+Nếu bạn đã xây dựng chuỗi middleware Express.js hoặc Hono, mẫu này sẽ quen thuộc:
+
+| Khái niệm Cardano | Tương đương Web2 |
+|---|---|
+| `withdraw.ak` (withdrawal script) | Hàm middleware chung (ví dụ: `authMiddleware`) |
+| `spend.ak` / `mint.ak` ủy quyền cho withdrawal | Route handler gọi `next()` qua chuỗi middleware |
+| Thủ thuật withdraw-zero | Trigger không tác dụng -- giống gọi health-check endpoint chỉ để kích hoạt tác dụng phụ của middleware |
+| Tập trung xác thực vào một script | Nguyên tắc DRY -- viết kiểm tra xác thực một lần, áp dụng mọi nơi |
+
+Nói theo thuật ngữ Express, thay vì copy-paste kiểm tra xác thực vào mỗi route handler, bạn trích xuất chúng thành hàm middleware và gắn vào router. Đó chính xác là điều `withdraw.ak` làm cho xác thực on-chain.
+
+### Cách các file phối hợp
+
+```mermaid
+graph LR
+    S["spend.ak"] -- "ủy quyền cho" --> W["withdraw.ak"]
+    M["mint.ak"] -- "ủy quyền cho" --> W
+    W -- "chạy tất cả kiểm tra chung" --> V{"Kết quả\nxác thực"}
+    V -- "đạt" --> TX["Giao dịch\nthành công"]
+    V -- "thất bại" --> F["Giao dịch\nthất bại"]
+
+    style W fill:#DDA0DD,stroke:#333,stroke-width:2px,color:#000
+    style S fill:#E0E0E0,stroke:#333,stroke-width:2px,color:#000
+    style M fill:#87CEEB,stroke:#333,stroke-width:2px,color:#000
+    style TX fill:#90EE90,stroke:#333,stroke-width:2px,color:#000
+    style F fill:#FFB6B6,stroke:#333,stroke-width:2px,color:#000
+```
+
+Như các sơ đồ trước đó trong bài học minh họa, không có ủy quyền thì mỗi validator sẽ độc lập lặp lại cùng các kiểm tra. Với ủy quyền, `spend.ak` và `mint.ak` mỗi cái chứa một guard duy nhất: "withdrawal script có mặt trong giao dịch này không?" Nếu có, chúng đạt. Tất cả logic xác thực thực sự thực thi một lần bên trong `withdraw.ak`.
+
+### `withdraw.ak` -- Middleware chung
+
+Đây là validator trung tâm nơi tất cả kiểm tra chung nằm. Nó nhận ngữ cảnh giao dịch và xác thực các điều kiện như chữ ký chủ sở hữu, hết hạn và bất kỳ quy tắc nghiệp vụ chung nào khác. Trong các sơ đồ ở trên, đây tương ứng với node "Withdrawal Script" màu tím nhận tất cả mũi tên xác thực chung.
+
+### `spend.ak` -- Delegate spending
+
+Nhiệm vụ duy nhất của spending validator là xác nhận rằng `withdraw.ak` đang tham gia trong giao dịch. Nó gọi `withdrawal_script_validated(tx.withdrawals, delegated_withdrawal_script_hash)` và trả về kết quả. Hãy nghĩ nó như route handler có toàn bộ nội dung là `return authMiddleware(req)`.
+
+### `mint.ak` -- Delegate minting
+
+Mẫu ủy quyền giống hệt `spend.ak`, nhưng cho các thao tác minting. Nó kiểm tra withdrawal script có mặt và để validator trung tâm xử lý logic thực sự. Điều này nghĩa là thêm quy tắc minting mới chỉ yêu cầu thay đổi trong `withdraw.ak`, không phải trong mỗi minting validator.
+
+### `aiken.toml` và `aiken.lock`
+
+Chúng đóng vai trò giống `package.json` và lockfile trong dự án Node.js. `aiken.toml` khai báo tên dự án, phiên bản và dependency (như thư viện `cocktail` cung cấp `withdrawal_script_validated`). `aiken.lock` cố định phiên bản dependency chính xác để build có thể tái tạo.
+
+### `plutus.json`
+
+Sản phẩm đã biên dịch được tạo bởi `aiken build`. File JSON này chứa bytecode đã biên dịch cho cả ba validator và thông tin kiểu của chúng. Mã off-chain TypeScript đọc file này để xây dựng giao dịch. Bài học tiếp theo sẽ đề cập chi tiết về file này.
+
+## Mã nguồn
+
+Mã nguồn cho bài học này có sẵn trên [GitHub](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/05-avoid-redundant-validation).

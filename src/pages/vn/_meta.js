@@ -1,8 +1,12 @@
 export default {
   index: {},
-  "course-hello-cardano": {
+  "course-blockchain": {
+    title: "Khóa học Lý thuyết Blockchain",
+    route: "/course-blockchain",
+  },
+  "course-cardano": {
     title: "Khóa học Hello Cardano",
-    route: "/course-hello-cardano",
+    route: "/course-cardano",
   },
   schedule: {},
 };

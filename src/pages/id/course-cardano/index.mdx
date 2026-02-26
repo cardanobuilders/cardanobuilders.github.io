@@ -1,0 +1,72 @@
+---
+title: Hello Cardano
+description: Pelajari cara membangun aplikasi di Cardano secara menyeluruh, dari smart contract hingga aplikasi front-end menggunakan Aiken dan Mesh SDK.
+asIndexPage: true
+sidebarTitle: Pengantar
+---
+
+# Hello Cardano
+
+Kursus ini membawa Anda dari nol hingga mampu membangun aplikasi full-stack di Cardano. Melalui 10 pelajaran praktis, Anda akan menulis smart contract dengan [Aiken](https://aiken-lang.org/), membangun transaksi dengan [Mesh SDK](https://meshjs.dev/), dan men-deploy aplikasi yang berfungsi di blockchain Cardano.
+
+Di akhir kursus ini, Anda akan memiliki pengalaman praktis dengan wallet, transaksi, pengembangan smart contract, testing, dan scaling Layer 2.
+
+## Prasyarat
+
+- **TypeScript**: Diperlukan pemahaman dasar TypeScript. Kursus ini berfokus pada konsep Cardano, bukan dasar-dasar bahasa pemrograman.
+- **Node.js v24+**: Diperlukan untuk menjalankan kode pelajaran. Kami merekomendasikan penggunaan [nvm](https://github.com/nvm-sh/nvm) untuk mengelola versi Node Anda.
+- **Tidak diperlukan pengalaman blockchain**: Setiap pelajaran dibangun di atas pelajaran sebelumnya, dimulai dari dasar.
+
+## Garis Besar Kursus
+
+### Pelajaran 1: Hello World
+Siapkan Mesh SDK, buat wallet dengan `MeshWallet`, dan kirim transaksi lovelace pertama Anda menggunakan `MeshTxBuilder`.
+[Kode sumber](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/01-wallet-send-lovelace)
+
+### Pelajaran 2: Transaksi Multi-signature
+Bangun transaksi multi-signature untuk minting token menggunakan native script dan siapkan frontend NextJS untuk berinteraksi dengan blockchain Cardano.
+[Kode sumber](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/02-multisig)
+
+### Pelajaran 3: Aiken Contracts
+Pelajari dasar-dasar smart contract Aiken, termasuk validator minting, spending, dan withdrawal dengan konteks transaksi.
+[Kode sumber](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/03-aiken-contracts)
+
+### Pelajaran 4: Contract Testing
+Uji smart contract Aiken menggunakan mock transaction, library mocktail, dan pembuatan kasus kegagalan dinamis dengan `aiken check`.
+[Kode sumber](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/04-contract-testing)
+
+### Pelajaran 5: Menghindari Validasi Redundan
+Kurangi biaya on-chain dengan memusatkan logika validasi umum dalam withdrawal script menggunakan pola withdraw-zero.
+[Kode sumber](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/05-avoid-redundant-validation)
+
+### Pelajaran 6: Menginterpretasi Blueprint
+Interpretasi blueprint Plutus CIP-57 dari kontrak Aiken dan generate kode off-chain TypeScript menggunakan Mesh SDK.
+[Kode sumber](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/06-interpreting-blueprint)
+
+### Pelajaran 7: Vesting Contract
+Bangun smart contract vesting yang mengunci dana dan memungkinkan penerima untuk menarik setelah periode lockup.
+[Kode sumber](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano/07-vesting)
+
+### Pelajaran 8: Plutus NFT Contract
+Buat kontrak Plutus NFT dengan beberapa validator, oracle token, dan indeks yang bertambah otomatis untuk non-fungibility.
+
+### Pelajaran 9: End-to-End Hydra
+Jelajahi Hydra, solusi scaling Layer 2 Cardano, melalui tutorial menyeluruh tentang state channel antara dua partisipan.
+
+### Pelajaran 10: Web3 Services
+Integrasikan wallet-as-a-service dan sponsorship transaksi untuk onboarding pengguna secara mulus ke dalam aplikasi Cardano Anda.
+
+## Tools dan Sumber Daya
+
+- **[Aiken](https://aiken-lang.org/)**: Bahasa untuk menulis smart contract Cardano yang efisien.
+- **[Mesh SDK](https://meshjs.dev/)**: SDK TypeScript untuk membangun transaksi dan berinteraksi dengan blockchain Cardano.
+- **[Blockfrost](https://blockfrost.io/)**: Penyedia API blockchain untuk melakukan query ke jaringan Cardano.
+- **[Cardano Preprod Testnet Faucet](https://docs.cardano.org/cardano-testnets/tools/faucet)**: Dapatkan test lovelace untuk pengembangan.
+
+## Kode Sumber
+
+Semua kode sumber untuk kursus ini tersedia di [GitHub](https://github.com/cardanobuilders/cardanobuilders.github.io/tree/main/codes/course-cardano).
+
+## Mulai Belajar
+
+Mulai dengan [Pelajaran 1: Hello World](/id/course-cardano/lessons/01-wallet-send-lovelace) untuk menyiapkan environment Anda dan mengirim transaksi pertama Anda.
